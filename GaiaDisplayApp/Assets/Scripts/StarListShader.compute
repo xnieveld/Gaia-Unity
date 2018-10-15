@@ -1,0 +1,68 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+uint textureHeight;
+uint textureWidth;
+uint xChunks;
+uint yChunks;
+uint starCount;
+uint starsPerChunkX;
+uint starsPerChunkY;
+float xMin, xMax, yMin, yMax;
+
+struct Star {
+	float4 starColour;
+	float3 starCoord;
+	float starMagnitude;
+};
+
+
+StructuredBuffer<Star> starList;
+
+StructuredBuffer<float4> starColours;
+StructuredBuffer<float3> starCoords;
+StructuredBuffer<float> starMagnitudes;
+RWTexture2D<float4> Result;
+
+
+//Make the 1st number be the same as xChunks, and the 2nd as yChunk vv
+[numthreads(8,8,1)] 
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	uint starID = id.x * starsPerChunkX + id.y;
+	int2 pos = int2(0,0);
+	//if (starID < starCount) {
+
+	pos.x = textureWidth / (xMax - xMin) * (starCoords[starID].x - xMin);
+	pos.y = textureHeight / (yMax - yMin) * (starCoords[starID].y - yMin);
+			
+	/*
+	pos.x = textureWidth / 360.0 * starCoords[starID].x;
+	pos.y = textureHeight / 180.0 * starCoords[starID].y;
+	*/
+
+	float distanceLog = log10(starCoords[starID].z);
+	float apparentMag = starMagnitudes[starID] + 5 * (distanceLog - 1); //TODO nog niet goed denk ik.
+
+	if (pos.x >= 0 && pos.x < textureWidth && pos.y >= 0 && pos.y < textureHeight) {
+		Result[pos] = starColours[starID];// / (apparentMag / -2);
+	}
+//}
+
+}
+
+/*
+
+rgb,   mag
+510 = -3
+255 = -2
+128 = -1
+64 = 0
+32 = 1
+16 = 2
+8 = 3
+4 = 4
+2 = 5
+1 = 6*/
