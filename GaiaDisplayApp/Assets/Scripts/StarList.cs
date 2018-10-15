@@ -10,7 +10,7 @@ public class StarList {
     {
         get
         {
-            Vector4[] coords = new Vector4[25600];
+            Vector4[] coords = new Vector4[10000];
             for (int i = 0; i < data.Count; i++)
             {
                 coords[i] = new Vector4((float)data[i].RightAccension, (float)data[i].Inclination+90, (float)data[i].Distance);
@@ -24,7 +24,7 @@ public class StarList {
     {
         get
         {
-            float[] mags = new float[25600];
+            float[] mags = new float[10000];
             for(int i = 0; i < data.Count; i++)
             {
                 mags[i] = data[i].Magnitude;
@@ -37,13 +37,14 @@ public class StarList {
     {
         get
         {
-            Vector4[] colours = new Vector4[25600];
+            Vector4[] colours = new Vector4[10000];
+            Debug.Log(data[2000].dec);
+            System.Random r = new System.Random();
             for (int i = 0; i < data.Count; i++)
             {
-                colours[i] = new Vector4(1,1,1,1);
+                colours[i] = (float)(NormalizedRandom.NextGaussianDouble(r) + 3) * Random.value * 5 * data[0].ColorTemperature((float)(NormalizedRandom.NextGaussianDouble(r) + 3) * 2000);
+                //colours[i] = new Vector4(1, 1, 1, 1);    
             }
-            colours[0] = new Vector4(20, 10, 10, 1);
-            colours[100] = new Vector4(200, 100, 1000, 1);
             return colours;
         }
     }

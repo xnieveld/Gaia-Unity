@@ -11,13 +11,11 @@ public class StarRenderer : MonoBehaviour {
     public ComputeShader starRenderShader;
     public int textureWidth = 1920;
     public int textureHeight = 1080;
-    public int xChunks = 8;
-    public int yChunks = 8;
-    public int starCount = 25600; // (8 * 20)^2
+    public int xChunks = 10;
+    public int yChunks = 10;
+    public int starCount = 10000; // (8 * 20)^2
 
     RenderTexture renderTex;
-
-
 
     [NonSerialized]
     Material bloomMaterial;
@@ -51,21 +49,27 @@ public class StarRenderer : MonoBehaviour {
     // Use this for initialization
     void Start () {
         starList = JSONReader.ParseStarJSON(JSONReader.ReadJSON("data-NaN-temp_Max"));
-        renderTex = new RenderTexture(textureWidth, textureHeight, 24);
+        renderTex = new RenderTexture(textureWidth, textureHeight, 24, RenderTextureFormat.ARGBFloat);
         renderTex.enableRandomWrite = true;
         renderTex.Create();
         
-        RenderStars(true);
+        RenderStars(true, true);
 	}
-    
-    private void RenderStars(bool updateStars)
-    {
-        renderTex = RenderTexture.GetTemporary(textureWidth, textureHeight, 0, RenderTextureFormat.ARGBFloat);//
-        renderTex.enableRandomWrite = true;
-        renderTex.autoGenerateMips = false;
-        renderTex.Create();
 
-        int kernel = starRenderShader.FindKernel("CSMain");
+    private void RenderStars(bool updateStars, bool newTex)
+    {
+        if (newTex)
+        {
+            renderTex = RenderTexture.GetTemporary(textureWidth, textureHeight, 24, RenderTextureFormat.ARGBFloat);
+            renderTex.enableRandomWrite = true;
+            renderTex.autoGenerateMips = false;
+            renderTex.Create();
+        }
+        int kernel = starRenderShader.FindKernel("CSClear");
+        starRenderShader.SetTexture(kernel, "Result", renderTex);
+        starRenderShader.Dispatch(kernel, renderTex.width / 7, renderTex.height / 7, 1);
+
+        kernel = starRenderShader.FindKernel("CSMain");
 
         starRenderShader.SetInt("textureHeight", textureHeight);
         starRenderShader.SetInt("textureWidth", textureWidth);
@@ -87,21 +91,30 @@ public class StarRenderer : MonoBehaviour {
             ComputeBuffer buffer_2 = new ComputeBuffer(starList.StarMags.Length, sizeof(float));
             buffer_2.SetData(starList.StarMags);
             starRenderShader.SetBuffer(0, "starMagnitudes", buffer_2);
-        }
 
+
+            starRenderShader.SetFloat("starsPerChunkX", 100);
+            starRenderShader.SetFloat("starsPerChunkY", 100);
+        }
+        
         starRenderShader.SetTexture(kernel, "Result", renderTex);
         //starRenderShader.SetVectorArray("starCoords", starList.StarCoords);
         //starRenderShader.SetVectorArray("starColours", starList.StarColours);
         //starRenderShader.SetFloats("starMagnitudes", starList.StarMags);
 
         //        starRenderShader.Dispatch(kernel, textureWidth / xChunks, textureHeight / yChunks, 1);
-        starRenderShader.Dispatch(kernel, (int)Mathf.Sqrt(starCount) / xChunks, (int)Mathf.Sqrt(starCount) / yChunks, 1);
+        //starRenderShader.Dispatch(kernel, (int)Mathf.Sqrt(starCount) / xChunks, (int)Mathf.Sqrt(starCount) / yChunks, 1);
+        starRenderShader.Dispatch(kernel, 100, 1, 1);
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-        textureHeight = source.height;
-        textureWidth = source.width;
+        if (textureHeight != source.height || textureWidth != source.width)
+        {
+            textureHeight = source.height;
+            textureWidth = source.width;
+            RenderStars(false, true);
+        }
 
         Graphics.Blit(renderTex, destination);
         if (false) //TODO is voor voorbeeld
@@ -207,7 +220,7 @@ public class StarRenderer : MonoBehaviour {
             xx = xc + w / 2;
             ys = yc - h / 2;
             yx = yc + h / 2;
-            RenderStars(false);
+            RenderStars(false, false);
         }
     }
 }
