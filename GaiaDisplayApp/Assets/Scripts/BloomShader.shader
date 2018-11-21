@@ -115,6 +115,20 @@
 				return c * _Exposure;
 			}
 				ENDCG
+		}
+
+		Pass
+		{ // 4
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
+
+			half4 frag(v2f i) : SV_Target{
+				half4 cS = tex2D(_SourceTex, i.uv); //foreground
+				float4 cM = tex2D(_MainTex, i.uv);// *(1 - clamp(max(0, ceil(cS.r + cS.g + cS.b)), 0, 1)); //(starry) background
+				return cM + cS;
 			}
+			ENDCG
+		}
 	}
 }

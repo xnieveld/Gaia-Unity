@@ -12,6 +12,9 @@ uint starCount;
 uint starsPerChunkX;
 uint starsPerChunkY;
 float xMin, xMax, yMin, yMax;
+float magIncrease;
+float zoom;
+float3 cameraPos;
 
 struct Star {
 	float4 starColour;
@@ -27,33 +30,53 @@ StructuredBuffer<float3> starCoords;
 StructuredBuffer<float> starMagnitudes;
 RWTexture2D<float4> Result;
 
+float3 CartesianToPolar(float3 coord, float3 origin) {
+	float3 correctedCoord = coord - origin;
+	float3 returnCoord = float3(0, 0, 0);
+	returnCoord.z = length(correctedCoord);
+
+	returnCoord.x = atan(correctedCoord.z / correctedCoord.x);
+	
+	if (isnan(returnCoord.x))
+	{
+		if (correctedCoord.x >= 0)
+		{
+			returnCoord.x = 0;
+		}
+		else
+		{
+			returnCoord.x = 3.14159;
+		}
+	}
+	else if (correctedCoord.x >= 0)
+	{
+		returnCoord.x += 3.14159;
+	}
+	returnCoord.y = asin(correctedCoord.y / returnCoord.z);
+
+	return returnCoord;
+}
+
 
 //Make the 1st number be the same as xChunks, and the 2nd as yChunk vv
-[numthreads(100,1,1)] 
+[numthreads(1000,1,1)] 
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
 	uint starID = id.x;
+	//float3 polarCoords = CartesianToPolar(starCoords[starID], cameraPos);
+	float3 polarCoords = starCoords[starID];
 	int2 pos = int2(0,0);
-	//if (starID < starCount) {
 
-	pos.x = textureWidth / (xMax - xMin) * (starCoords[starID].x - xMin);
-	pos.y = textureHeight / (yMax - yMin) * (starCoords[starID].y - yMin);
-			
-	/*
-	pos.x = textureWidth / 360.0 * starCoords[starID].x;
-	pos.y = textureHeight / 180.0 * starCoords[starID].y;
-	*/
+	pos.x = textureWidth / (xMax - xMin) * (polarCoords.x - xMin);
+	pos.y = textureHeight / (yMax - yMin) * (polarCoords.y - yMin);
 
-	float distanceLog = log10(starCoords[starID].z);
-	float apparentMag = starMagnitudes[starID] + 5 * (distanceLog - 1); //TODO nog niet goed denk ik.
-
-	float4 oldCol = Result[pos];
+	float apparentMag = 5 * log10(polarCoords.z / 10) + starMagnitudes[starID];
+	apparentMag = starMagnitudes[starID];
+	float4 luminosity = /*255 * */pow(2, ((-apparentMag) - 2 + magIncrease));
 
 	if (pos.x >= 0 && pos.x < textureWidth && pos.y >= 0 && pos.y < textureHeight) {
-		Result[pos] = starColours[starID];// / (apparentMag / -2);
+		Result[pos] = normalize(starColours[starID]) * luminosity;
 	}
-//}
-
 }
 
 

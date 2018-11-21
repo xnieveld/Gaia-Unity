@@ -6,6 +6,9 @@ using UnityEngine;
 
 public class StarRenderer : MonoBehaviour {
 
+    private static StarRenderer instance;
+    public static StarRenderer Instance { get { return instance; } }
+
     StarList starList;
     public Material skyboxMaterial;
     public ComputeShader starRenderShader;
@@ -35,6 +38,7 @@ public class StarRenderer : MonoBehaviour {
     const int DownScalePass = 1;
     const int UpScalePass = 2;
     const int MergePass = 3;
+    const int MergePassBackDrop = 4;
     double xs = 0;
     double xx = 360;
     double ys = 0;
@@ -43,12 +47,30 @@ public class StarRenderer : MonoBehaviour {
     double yc = 90;
     double w = 360;
     double h = 180;
+    double zoom = 1;
+    float magIncrease = 0;
 
     RenderTexture[] textures = new RenderTexture[16];
+    public double[] cameraPosition = new double[] { 0, 0, 0 };
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            DontDestroyOnLoad(gameObject);
+            instance = this;
+        }
+        else
+        {
+            instance.Start();
+            GameObject.Destroy(gameObject);
+        }
+    }
 
     // Use this for initialization
     void Start () {
-        starList = JSONReader.ParseStarJSON(JSONReader.ReadJSON("data-NaN-temp_Max"));
+        //starList = JSONReader.ParseStarJSON(JSONReader.ReadJSON("data-NaN-temp_Max"));
+        starList = JSONReader.ParseStarJSON(JSONReader.ReadJSON("data-750k-null"));
         renderTex = new RenderTexture(textureWidth, textureHeight, 24, RenderTextureFormat.ARGBFloat);
         renderTex.enableRandomWrite = true;
         renderTex.Create();
@@ -77,6 +99,8 @@ public class StarRenderer : MonoBehaviour {
         starRenderShader.SetFloat("xMax", (float)xx);
         starRenderShader.SetFloat("yMin", (float)ys);
         starRenderShader.SetFloat("yMax", (float)yx);
+        starRenderShader.SetFloat("magIncrease", magIncrease);
+        starRenderShader.SetFloat("zoom", (float)zoom);
 
         if (updateStars)
         {
@@ -92,9 +116,12 @@ public class StarRenderer : MonoBehaviour {
             buffer_2.SetData(starList.StarMags);
             starRenderShader.SetBuffer(0, "starMagnitudes", buffer_2);
 
+            /*ComputeBuffer buffer_3 = new ComputeBuffer(starList.Count, sizeof(float) * 8);
+            buffer_3.SetData(starList.Stars);
+            starRenderShader.SetBuffer(0, "stars", buffer_3);*/
 
-            starRenderShader.SetFloat("starsPerChunkX", 100);
-            starRenderShader.SetFloat("starsPerChunkY", 100);
+            starRenderShader.SetFloat("starsPerChunkX", 1000);
+            starRenderShader.SetFloat("starsPerChunkY", 1000);
         }
         
         starRenderShader.SetTexture(kernel, "Result", renderTex);
@@ -104,7 +131,7 @@ public class StarRenderer : MonoBehaviour {
 
         //        starRenderShader.Dispatch(kernel, textureWidth / xChunks, textureHeight / yChunks, 1);
         //starRenderShader.Dispatch(kernel, (int)Mathf.Sqrt(starCount) / xChunks, (int)Mathf.Sqrt(starCount) / yChunks, 1);
-        starRenderShader.Dispatch(kernel, 100, 1, 1);
+        starRenderShader.Dispatch(kernel, 750, 1, 1);
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination)
@@ -116,7 +143,7 @@ public class StarRenderer : MonoBehaviour {
             RenderStars(false, true);
         }
 
-        Graphics.Blit(renderTex, destination);
+     //   Graphics.Blit(renderTex, destination);
         if (false) //TODO is voor voorbeeld
         {
             Graphics.Blit(source, destination);
@@ -127,8 +154,6 @@ public class StarRenderer : MonoBehaviour {
             bloomMaterial = new Material(bloomShader);
             bloomMaterial.hideFlags = HideFlags.HideAndDontSave;
         }
-
-
         bloomMaterial.SetFloat("_Threshold", threshold);
         //power = Mathf.Clamp((transform.position - focus.transform.position).magnitude / 10, 0.01f, 1);
         bloomMaterial.SetFloat("_Power", power);
@@ -137,9 +162,15 @@ public class StarRenderer : MonoBehaviour {
         int height = source.height / 2;
         RenderTextureFormat format = source.format;
 
-        RenderTexture currentDestination = textures[0] =
-            RenderTexture.GetTemporary(width, height, 0, format);
-        Graphics.Blit(renderTex, currentDestination, bloomMaterial, FilterPass);
+
+        bloomMaterial.SetTexture("_SourceTex", source);
+        RenderTexture currentDestination = RenderTexture.GetTemporary(source.width, source.height, 0, format);
+        Graphics.Blit(renderTex, currentDestination, bloomMaterial, MergePassBackDrop);
+        RenderTexture merged = currentDestination;
+       
+
+        currentDestination = textures[0] =  RenderTexture.GetTemporary(width, height, 0, format);
+        Graphics.Blit(merged, currentDestination, bloomMaterial, FilterPass);
         RenderTexture currentSource = currentDestination;
 
 
@@ -161,15 +192,16 @@ public class StarRenderer : MonoBehaviour {
         for (i -= 2; i >= 0; i--)
         {
             currentDestination = textures[i];
+            RenderTexture.ReleaseTemporary(currentSource);
             textures[i] = null;
             Graphics.Blit(currentSource, currentDestination, bloomMaterial, UpScalePass);
-            RenderTexture.ReleaseTemporary(currentSource);
             currentSource = currentDestination;
         }
 
-        bloomMaterial.SetTexture("_SourceTex", renderTex);
+        bloomMaterial.SetTexture("_SourceTex", merged);
         Graphics.Blit(currentSource, destination, bloomMaterial, MergePass);
         RenderTexture.ReleaseTemporary(currentSource);
+        RenderTexture.ReleaseTemporary(merged);
     }
 
 
@@ -184,42 +216,50 @@ public class StarRenderer : MonoBehaviour {
         }
         if (Input.GetKey(KeyCode.O))
         {
-            h *= 1.03f;
-            w *= 1.03f;
+            zoom *= 1.03f;
             change = true;
         }
         if (Input.GetKey(KeyCode.P))
         {
-            h /= 1.03f;
-            w /= 1.03f;
+            zoom /= 1.03f;
             change = true;
         }
         if (Input.GetKey(KeyCode.UpArrow))
         {
-            yc += h * 0.01f;
+            yc += zoom * h * 0.01f;
             change = true;
         }
         if (Input.GetKey(KeyCode.DownArrow))
         {
-            yc -= h * 0.01f;
+            yc -= zoom * h * 0.01f;
             change = true;
         }
         if (Input.GetKey(KeyCode.RightArrow))
         {
-            xc += w * 0.01f;
+            xc += zoom * w * 0.01f;
             change = true;
         }
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            xc -= w * 0.01f;
+            xc -= zoom * w * 0.01f;
+            change = true;
+        }
+        if (Input.GetKey(KeyCode.Comma))
+        {
+            magIncrease -= 0.05f;
+            change = true;
+        }
+        if (Input.GetKey(KeyCode.Period))
+        {
+            magIncrease += 0.05f;
             change = true;
         }
         if (change)
         {
-            xs = xc - w / 2;
-            xx = xc + w / 2;
-            ys = yc - h / 2;
-            yx = yc + h / 2;
+            xs = xc - zoom * w / 2;
+            xx = xc + zoom * w / 2;
+            ys = yc - zoom * h / 2;
+            yx = yc + zoom * h / 2;
             RenderStars(false, false);
         }
     }
