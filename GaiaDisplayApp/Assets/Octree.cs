@@ -47,7 +47,7 @@ class SparseOctree
         }
 
         Split();
-        GetChildFromPosition(obj.GetPosition()).InsertObject(obj);
+        GetChildFromPosition(obj.coordinates).InsertObject(obj);
     }
 
     /// <summary>
@@ -70,7 +70,7 @@ class SparseOctree
         children[7] = new SparseOctree(new Vector3(position.x + childSize, position.y + childSize, position.z + childSize), childSize);
 
         // When we create the child nodes the object held by the current node should be passed to one of the child nodes
-        GetChildFromPosition(galacticObject.GetPosition()).InsertObject(galacticObject);
+        GetChildFromPosition(galacticObject.coordinates).InsertObject(galacticObject);
         galacticObject = null;
     }
 
@@ -115,6 +115,7 @@ class SparseOctree
     {
         uint count = 0;
 
+       // Recursive count
         for (int i = 0; i < 8; ++i) {
             if (!ReferenceEquals(children, null)) {
                 count += 1 + children[i].CountChildren();
