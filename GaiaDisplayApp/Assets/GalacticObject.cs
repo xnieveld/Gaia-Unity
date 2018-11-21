@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GalacticObject : MonoBehaviour {
 
+
+
 	// Use this for initialization
 	void Start () {
 		
