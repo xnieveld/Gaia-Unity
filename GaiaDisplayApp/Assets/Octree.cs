@@ -1,187 +1,263 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using Mono.Simd;
 
-class SparseOctree 
+public class Octree
 {
-    /* private SparseOctree[] children; */
-    /* private GalacticObject galacticObject; */
-    /* private Vector3 position; */
-    /* private float size; */
+    private readonly Vector3 position;
+    private readonly uint size;
+    private uint leaf_count;
+    private uint branch_count;
+    private Vector3[] object_positions;
+    private Dictionary<ulong, object> nodes;
+    private BaseNode root_node;
 
-    /* /// <summary> */
-    /* /// Child position for based on binary format. */
-    /* /// This gives the following structure: */
-    /* /// Front:      Back: */
-    /* ///  --- ---     --- --- */ 
-    /* /// | 2 | 3 |   | 6 | 7 | */
-    /* /// | - | - |   | - | - | */
-    /* /// | 0 | 1 |   | 4 | 5 | */
-    /* ///  --- ---     --- --- */
-    /* /// </summary> */
-    /* private enum */ 
-    /* ChildPos */ 
-    /* { */
-    /*     X = 1, */
-    /*     Y = 2, */
-    /*     Z = 3 */
-    /* } */
+    class BaseNode
+    {
+        public ulong location_code;
+        public byte type;
+    };
 
-    /* SparseOctree(Vector3 position, float size) */
-    /* { */
-    /*     this.position = position; */
-    /*     this.size = size; */
-    /* } */
+    /**
+     * @brief The leaf node. This holds the object index of the object.
+     *        The object index can be used by the user to find the right
+     *        object in his array.
+     */
+    class LeafNode : BaseNode
+    {
+        public uint object_index;
 
-    /* /// <summary> */
-    /* /// Inserts the new galactic object in the node, unless this node is */
-    /* /// already filled, in which case we split the node. */
-    /* /// </summary> */
-    /* /// <param name="obj">Object.</param> */
-    /* public void */ 
-    /* InsertObject(GalacticObject obj) */
-    /* { */
-    /*     if (ReferenceEquals(galacticObject, null)) { */
-    /*         galacticObject = obj; */
-    /*         return; */
-    /*     } */
+        public LeafNode(ulong location_code, uint object_index)
+        {
+            this.location_code = location_code;
+            this.object_index = object_index;
+        }
+    };
 
-    /*     Split(); */
-    /*     GetChildFromPosition(obj.coordinates).InsertObject(obj); */
-    /* } */
+    /**
+     * @brief The inner node is a node that doesn't contain an object but
+     * branches into smaller nodes. It has a child exists flag that where every
+     * bit is set for the correlating child. This can be used t quickly check if
+     * child nodes already exist.
+     */
+    class BranchNode : BaseNode
+    {
+        public byte child_exists;
 
-    /* /// <summary> */
-    /* /// Split this node into smaller children and put the galacticObject of */
-    /* /// this node in one of the children nodes. */
-    /* /// </summary> */
-    /* private void */ 
-    /* Split() */
-    /* { */
-    /*     children = new SparseOctree[8]; */
-    /*     float childSize = size * .5f; */
+        public BranchNode(ulong location_code)
+        {
+            this.location_code = location_code;
+            type = 0;
+        }
+    };
 
-    /*     children[0] = new SparseOctree(new Vector3(position.x - childSize, position.y - childSize, position.z - childSize), childSize); */
-    /*     children[1] = new SparseOctree(new Vector3(position.x + childSize, position.y - childSize, position.z - childSize), childSize); */
-    /*     children[2] = new SparseOctree(new Vector3(position.x - childSize, position.y + childSize, position.z - childSize), childSize); */
-    /*     children[3] = new SparseOctree(new Vector3(position.x + childSize, position.y + childSize, position.z - childSize), childSize); */
-    /*     children[4] = new SparseOctree(new Vector3(position.x - childSize, position.y - childSize, position.z + childSize), childSize); */
-    /*     children[5] = new SparseOctree(new Vector3(position.x + childSize, position.y - childSize, position.z + childSize), childSize); */
-    /*     children[6] = new SparseOctree(new Vector3(position.x - childSize, position.y + childSize, position.z + childSize), childSize); */
-    /*     children[7] = new SparseOctree(new Vector3(position.x + childSize, position.y + childSize, position.z + childSize), childSize); */
+    public Octree(uint size, Vector3 position)
+    {
+        nodes = new Dictionary<ulong, object>();
 
-    /*     // When we create the child nodes the object held by the current node should be passed to one of the child nodes */
-    /*     GetChildFromPosition(galacticObject.coordinates).InsertObject(galacticObject); */
-    /*     galacticObject = null; */
-    /* } */
+        this.size = size;
+        this.position = position;
+        root_node = AddLeaf(0, 1, uint.MaxValue);
+    }
 
-    /* /// <summary> */
-    /* /// Gets the child from position. */ 
-    /* /// </summary> */
-    /* /// <returns>The child from position.</returns> */
-    /* /// <param name="objectPosition">Object position.</param> */
-    /* private SparseOctree */ 
-    /* GetChildFromPosition(Vector3 objectPosition) */
-    /* { */
-    /*     uint child = 0; */
-    /*     child |= objectPosition.x < position.x ? 0 : (uint)ChildPos.X; */
-    /*     child |= objectPosition.y < position.y ? 0 : (uint)ChildPos.Y; */
-    /*     child |= objectPosition.z < position.z ? 0 : (uint)ChildPos.Z; */
+    public void BuildOctree(Vector3[] object_positions)
+    {
+        this.object_positions = object_positions;
 
-    /*     return children[child]; */
-    /* } */
+        for (uint i = 0; i < object_positions.Length; i++) {
+            LeafNode leaf_node = FindEmptyLeaf(root_node, object_positions[i]);
+            if (leaf_node.object_index != uint.MaxValue) {
+                SplitLeaf(leaf_node);
+                leaf_node = FindEmptyLeaf(root_node, object_positions[i]);
+                leaf_node.object_index = i;
+            }
+            else {
+                leaf_node.object_index = i;
+            }
+        }
+    }
 
-    /* /// <summary> */
-    /* /// Finds the child from position. But does this recursively through it's child nodes */
-    /* /// </summary> */
-    /* /// <returns>The child from position.</returns> */
-    /* /// <param name="objectPosition">Object position.</param> */
-    /* public SparseOctree */
-    /* FindChildFromPosition(Vector3 objectPosition) */
-    /* { */
-    /*     SparseOctree child = null; */
-    /*     while (ReferenceEquals(GetChildFromPosition(objectPosition).children, null)) { */
-    /*         GetChildFromPosition(objectPosition); */
-    /*     } */
+    BranchNode AddBranch(ulong location_code)
+    {
+        BranchNode node = new BranchNode(location_code);
+        nodes.Add(node.location_code, node);
+        branch_count++;
 
-    /*     return child; */
-    /* } */
+        // If we just removed the root node set it to the new inner node
+        if (location_code == 1u) {
+            root_node = node;
+        }
 
-    /* /// <summary> */
-    /* /// Recursively counts the children. This does include the empty nodes */
-    /* /// </summary> */
-    /* /// <returns>The number of children.</returns> */
-    /* private uint */
-    /* CountChildren() */
-    /* { */
-    /*     uint count = 0; */
+        return node;
+    }
 
-    /*    // Recursive count */
-    /*     for (int i = 0; i < 8; ++i) { */
-    /*         if (!ReferenceEquals(children, null)) { */
-    /*             count += 1 + children[i].CountChildren(); */
-    /*         } */
-    /*     } */
-    /*     return count; */
-    /* } */
+    void RemoveBranch(ulong location_code)
+    {
+        nodes.Remove(location_code);
+        branch_count--;
+    }
 
-/* void sse_culling_aabb(SparseOctree[] octree_nodes, int num_objects, int[] culling_res) */
-/* { */
-    /* // To optimize calculations we gather xyzw elements in separate vectors */
-    /* Vector4f frustum_planes_x = new Vector4f(); */
-    /* Vector4f frustum_planes_y = new Vector4f(); */
-    /* Vector4f frustum_planes_z = new Vector4f(); */
+    LeafNode AddLeaf(ulong parent_location, byte child_location, uint object_index)
+    {
+        ulong new_location = (parent_location << 3) | child_location;
+        LeafNode node = new LeafNode(new_location, object_index);
+        
+        nodes.Add(node.location_code, node);
+        leaf_count++;
 
-    /* Plane[] frustum_planes = GeometryUtility.CalculateFrustumPlanes(Camera.main); */
+        if (parent_location > 0) {
+            BranchNode parent_node = (BranchNode)LookupNode(parent_location);
+            parent_node.child_exists |= (byte)(1u << child_location);
+        }
 
-    /* int i, j; */
-    /* for (i = 0; i < 4; i++) { */
-    /*     frustum_planes_x[i] = frustum_planes[i].normal.x; */
-    /*     frustum_planes_y[i] = frustum_planes[i].normal.y; */
-    /*     frustum_planes_z[i] = frustum_planes[i].normal.z; */
-    /* } */
+        // If we just removed the root node set it to the new inner node
+        if (new_location == 1u) {
+            root_node = node;
+        }
 
-    /* // We process 4 objects per step */
-    /* for (i = 0; i < num_objects; i += 4) { */
-    /*     aabb_min_x = _mm_load_ps(aabb_data_ptr); */
-    /*     __m128 aabb_min_y = _mm_load_ps(aabb_data_ptr + 8); */
-    /*     __m128 aabb_min_z = _mm_load_ps(aabb_data_ptr + 16); */
-    /*     __m128 aabb_min_w = _mm_load_ps(aabb_data_ptr + 24); */
-    /*     //load aabb max */
-    /*     __m128 aabb_max_x = _mm_load_ps(aabb_data_ptr + 4); */
-    /*     __m128 aabb_max_y = _mm_load_ps(aabb_data_ptr + 12); */
-    /*     __m128 aabb_max_z = _mm_load_ps(aabb_data_ptr + 20); */
-    /*     __m128 aabb_max_w = _mm_load_ps(aabb_data_ptr + 28); */
-    /*     aabb_data_ptr += 32; */
-    /*     //for now we have points in vectors aabb_min_x..w, but for calculations we need to xxxx yyyy zzzz vectors representation - just transpose data */
-    /*     _MM_TRANSPOSE4_PS(aabb_min_x, aabb_min_y, aabb_min_z, aabb_min_w); */
-    /*     _MM_TRANSPOSE4_PS(aabb_max_x, aabb_max_y, aabb_max_z, aabb_max_w); */
-    /*     __m128 intersection_res = _mm_setzero_ps(); */
+        return node;
+    }
 
-    /*     for (j = 0; j < 4; j++) { */
-    /*         //this code is similar to what we make in simple culling */
-    /*         //pick closest point to plane and check if it begind the plane. if yes - object outside frustum */
-    /*         //dot product, separate for each coordinate, for min & max aabb points */
-    /*         __m128 aabbMin_frustumPlane_x = _mm_mul_ps(aabb_min_x, frustum_planes_x[j]); */
-    /*         __m128 aabbMin_frustumPlane_y = _mm_mul_ps(aabb_min_y, frustum_planes_y[j]); */
-    /*         __m128 aabbMin_frustumPlane_z = _mm_mul_ps(aabb_min_z, frustum_planes_z[j]); */
-    /*         __m128 aabbMax_frustumPlane_x = _mm_mul_ps(aabb_max_x, frustum_planes_x[j]); */
-    /*         __m128 aabbMax_frustumPlane_y = _mm_mul_ps(aabb_max_y, frustum_planes_y[j]); */
-    /*         __m128 aabbMax_frustumPlane_z = _mm_mul_ps(aabb_max_z, frustum_planes_z[j]); */
-    /*         //we have 8 box points, but we need pick closest point to plane. Just take max */
-    /*         __m128 res_x = _mm_max_ps(aabbMin_frustumPlane_x, aabbMax_frustumPlane_x); */
-    /*         __m128 res_y = _mm_max_ps(aabbMin_frustumPlane_y, aabbMax_frustumPlane_y); */
-    /*         __m128 res_z = _mm_max_ps(aabbMin_frustumPlane_z, aabbMax_frustumPlane_z); */
-    /*         //dist to plane = dot(aabb_point.xyz, plane.xyz) + plane.w */
-    /*         __m128 sum_xy = _mm_add_ps(res_x, res_y); */
-    /*         __m128 sum_zw = _mm_add_ps(res_z, frustum_planes_d[j]); */
-    /*         __m128 distance_to_plane = _mm_add_ps(sum_xy, sum_zw); */
-    /*         __m128 plane_res = _mm_cmple_ps(distance_to_plane, zero); //dist from closest point to plane < 0 ? */
-    /*         intersection_res = _mm_or_ps(intersection_res, plane_res); //if yes - aabb behind the plane & outside frustum */
-    /*     } */
+    void RemoveLeaf(ulong location_code)
+    {
+        nodes.Remove(location_code);
+        leaf_count--;
+    }
 
-    /*     // Store result */
-    /*     __m128i intersection_res_i = _mm_cvtps_epi32(intersection_res); */
-    /*     _mm_store_si128((__m128i*)&culling_res_sse, intersection_res_i); */
-    /* } */
-/* } */
+    LeafNode FindEmptyLeaf(object node, Vector3 object_position)
+    {
+        if (node is LeafNode)
+        {
+            return (LeafNode)node;
+        }
+        else if (node is BranchNode)
+        {
+            BranchNode branch_node = (BranchNode)node;
+            Vector3 node_position = NodeGetPosition(branch_node);
+
+            byte child_location = 0;
+            child_location |= object_position.x > node_position.x ? (byte)(1u << 0) : (byte)0;
+            child_location |= object_position.y > node_position.y ? (byte)(1u << 1) : (byte)0;
+            child_location |= object_position.z > node_position.z ? (byte)(1u << 2) : (byte)0;
+           
+            bool child_exists = Convert.ToBoolean(branch_node.child_exists & (byte)(1u << child_location));
+            if (child_exists)
+            {
+                branch_node = SplitLeaf((LeafNode)NodeGetChild(branch_node.location_code, child_location));
+                return FindEmptyLeaf(branch_node, object_position);
+            }
+
+            return AddLeaf(branch_node.location_code, child_location, uint.MaxValue);
+        }
+
+        return null;
+    }
+
+    BranchNode SplitLeaf(LeafNode node)
+    {
+        uint object_index = node.object_index;
+        ulong location_code = node.location_code;
+        RemoveLeaf(location_code);
+
+        BranchNode branch_node = AddBranch(location_code);
+
+        LeafNode new_child = FindEmptyLeaf(branch_node, object_positions[object_index]);
+        new_child.object_index = object_index;
+
+        return branch_node;
+    }
+
+    Vector3 NodeGetPosition(BaseNode node)
+    {
+        Vector3 position = this.position;
+
+        ushort tree_depth = NodeGetDepth(node);
+        for (int i = 0; i < tree_depth; i += 3)
+        {
+            ulong offset = 1;
+            offset = offset << (tree_depth * 3 - 3 * i);
+            byte local_code = (byte)(node.location_code & offset);
+            position.x = Convert.ToBoolean(local_code & 1u)
+                              ? position.x + this.size / (2.0f * tree_depth)
+                              : position.x - this.size / (2.0f * tree_depth);
+            position.y = Convert.ToBoolean(local_code & 2u)
+                              ? position.y + this.size / (2.0f * tree_depth)
+                              : position.y - this.size / (2.0f * tree_depth);
+            position.z = Convert.ToBoolean(local_code & 4u)
+                              ? position.z + this.size / (2.0f * tree_depth)
+                              : position.z - this.size / (2.0f * tree_depth);
+        }
+
+        return position;
+    }
+
+    ushort NodeGetDepth(BaseNode node)
+    {
+        ushort depth = 0;
+        for (ulong location_code = node.location_code; location_code != 1; location_code >>= 3) {
+            depth++;
+        }
+          
+        return depth;
+    }
+
+    uint NodeGetSize(BaseNode node)
+    {
+        return NodeGetDepth(node) > 0 ? size / (2 * (uint)NodeGetDepth(node)) : size;
+    }
+
+    object NodeGetParent(BaseNode node)
+    {
+        ulong location_code_parent = node.location_code >> 3;
+        return LookupNode(location_code_parent);
+    }
+
+    object NodeGetChild(ulong location_code, byte child_location)
+    {
+        ulong child_location_code = (location_code << 3) | child_location;
+        return LookupNode(child_location_code);
+    }
+
+    object LookupNode(ulong location_code)
+    {
+        return nodes[location_code];
+    }
+  
+    // TEST CASE
+    void VisitAll(BaseNode node)
+    {
+        for (int i = 0; i < 8; i++) {
+            if (node.type == 0) {
+                BranchNode branch_node = (BranchNode)node;
+                if (Convert.ToBoolean(branch_node.child_exists & (1 << i))) {
+                    BaseNode child = (BaseNode)NodeGetChild(node.location_code, (byte)i);
+                    VisitAll(child);
+                }
+            }
+            else {
+                Debug.Log(node);
+            }
+        }
+    }
+
+    public struct NodeDebug
+    {
+        public Vector3 position;
+        public uint size;
+    }
+
+    public NodeDebug[] DebugGetNodes()
+    {
+        NodeDebug[] debug_nodes = new NodeDebug[nodes.Count];
+
+        uint i = 0;
+        foreach (var node in nodes) { 
+            debug_nodes[i].position = NodeGetPosition((BaseNode)node.Value);
+            debug_nodes[i].size = NodeGetSize((BaseNode)node.Value);
+            ++i;
+        }
+
+        return debug_nodes;
+    }
 }
