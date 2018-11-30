@@ -68,8 +68,8 @@ public class Octree
         for (uint i = 0; i < object_positions.Length; i++) {
             LeafNode leaf_node = FindEmptyLeaf(root_node, object_positions[i]);
             if (leaf_node.object_index != uint.MaxValue) {
-                SplitLeaf(leaf_node);
-                leaf_node = FindEmptyLeaf(root_node, object_positions[i]);
+                BranchNode new_branch = SplitLeaf(leaf_node);
+                leaf_node = FindEmptyLeaf(new_branch, object_positions[i]);
                 leaf_node.object_index = i;
             }
             else {
@@ -102,7 +102,7 @@ public class Octree
     {
         ulong new_location = (parent_location << 3) | child_location;
         LeafNode node = new LeafNode(new_location, object_index);
-        
+
         nodes.Add(node.location_code, node);
         leaf_count++;
 
@@ -127,12 +127,9 @@ public class Octree
 
     LeafNode FindEmptyLeaf(object node, Vector3 object_position)
     {
-        if (node is LeafNode)
-        {
-            return (LeafNode)node;
-        }
-        else if (node is BranchNode)
-        {
+        if (node is LeafNode) { return (LeafNode)node; }
+
+        if (node is BranchNode) {
             BranchNode branch_node = (BranchNode)node;
             Vector3 node_position = NodeGetPosition(branch_node);
 
@@ -140,11 +137,17 @@ public class Octree
             child_location |= object_position.x > node_position.x ? (byte)(1u << 0) : (byte)0;
             child_location |= object_position.y > node_position.y ? (byte)(1u << 1) : (byte)0;
             child_location |= object_position.z > node_position.z ? (byte)(1u << 2) : (byte)0;
-           
+
             bool child_exists = Convert.ToBoolean(branch_node.child_exists & (byte)(1u << child_location));
-            if (child_exists)
-            {
-                branch_node = SplitLeaf((LeafNode)NodeGetChild(branch_node.location_code, child_location));
+            if (child_exists) {
+                var child_node = NodeGetChild(branch_node.location_code, child_location);
+                if (child_node is LeafNode) {
+                    branch_node = SplitLeaf((LeafNode)child_node);
+                }
+                else if (child_node is BranchNode) {
+                    branch_node = (BranchNode)child_node;
+                }
+
                 return FindEmptyLeaf(branch_node, object_position);
             }
 
@@ -173,20 +176,18 @@ public class Octree
         Vector3 position = this.position;
 
         ushort tree_depth = NodeGetDepth(node);
-        for (int i = 0; i < tree_depth; i += 3)
-        {
-            ulong offset = 1;
-            offset = offset << (tree_depth * 3 - 3 * i);
-            byte local_code = (byte)(node.location_code & offset);
+        for (int i = 0; i < tree_depth; i++) {
+            int offset = tree_depth * 3 - 3 * (i + 1);
+            byte local_code = (byte)((node.location_code >> offset) & 7); // 7 = 0b111
             position.x = Convert.ToBoolean(local_code & 1u)
-                              ? position.x + this.size / (2.0f * tree_depth)
-                              : position.x - this.size / (2.0f * tree_depth);
+                              ? position.x + this.size / Mathf.Pow(2.0f, (i + 1))
+                              : position.x - this.size / Mathf.Pow(2.0f, (i + 1));
             position.y = Convert.ToBoolean(local_code & 2u)
-                              ? position.y + this.size / (2.0f * tree_depth)
-                              : position.y - this.size / (2.0f * tree_depth);
+                              ? position.y + this.size / Mathf.Pow(2.0f, (i + 1))
+                              : position.y - this.size / Mathf.Pow(2.0f, (i + 1));
             position.z = Convert.ToBoolean(local_code & 4u)
-                              ? position.z + this.size / (2.0f * tree_depth)
-                              : position.z - this.size / (2.0f * tree_depth);
+                              ? position.z + this.size / Mathf.Pow(2.0f, (i + 1))
+                              : position.z - this.size / Mathf.Pow(2.0f, (i + 1));
         }
 
         return position;
@@ -198,13 +199,13 @@ public class Octree
         for (ulong location_code = node.location_code; location_code != 1; location_code >>= 3) {
             depth++;
         }
-          
+
         return depth;
     }
 
-    uint NodeGetSize(BaseNode node)
+    float NodeGetSize(BaseNode node)
     {
-        return NodeGetDepth(node) > 0 ? size / (2 * (uint)NodeGetDepth(node)) : size;
+        return NodeGetDepth(node) > 0 ? size / Mathf.Pow(2f, NodeGetDepth(node)) : size;
     }
 
     object NodeGetParent(BaseNode node)
@@ -223,7 +224,7 @@ public class Octree
     {
         return nodes[location_code];
     }
-  
+
     // TEST CASE
     void VisitAll(BaseNode node)
     {
@@ -241,10 +242,13 @@ public class Octree
         }
     }
 
+    /// <summary>
+    /// /////////////////////////////////////////
+    /// </summary>
     public struct NodeDebug
     {
         public Vector3 position;
-        public uint size;
+        public float size;
     }
 
     public NodeDebug[] DebugGetNodes()
@@ -252,9 +256,9 @@ public class Octree
         NodeDebug[] debug_nodes = new NodeDebug[nodes.Count];
 
         uint i = 0;
-        foreach (var node in nodes) { 
+        foreach (var node in nodes) {
             debug_nodes[i].position = NodeGetPosition((BaseNode)node.Value);
-            debug_nodes[i].size = NodeGetSize((BaseNode)node.Value);
+            debug_nodes[i].size = NodeGetSize((BaseNode)node.Value) * 2;
             ++i;
         }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FlyCam : MonoBehaviour {
     public float cameraSensitivity = 90;
-    public float climbSpeed = 4;
+    public float climbSpeed = 20;
     public float normalMoveSpeed = 10;
     public float slowMoveFactor = 0.25f;
     public float fastMoveFactor = 3;
@@ -13,7 +13,7 @@ public class FlyCam : MonoBehaviour {
     private float rotationY = 0.0f;
 
     void Start() {
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update() {
@@ -37,8 +37,8 @@ public class FlyCam : MonoBehaviour {
         }
 
         // Elevation
-        if (Input.GetKey(KeyCode.Q)) { transform.position += transform.up * climbSpeed * Time.deltaTime; }
-        if (Input.GetKey(KeyCode.E)) { transform.position -= transform.up * climbSpeed * Time.deltaTime; }
+        if (Input.GetKey(KeyCode.E)) { transform.position += transform.up * climbSpeed * Time.deltaTime; }
+        if (Input.GetKey(KeyCode.Q)) { transform.position -= transform.up * climbSpeed * Time.deltaTime; }
 
         if (Input.GetMouseButtonDown(0)) {
             RaycastHit hit;

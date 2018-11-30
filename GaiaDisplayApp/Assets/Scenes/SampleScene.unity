@@ -211,6 +211,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   size: 30
   position: {x: 0, y: 0, z: 0}
+  cube_prefab: {fileID: 1068242075176664, guid: d684a3c198381f64ba588184863c01ea,
+    type: 2}
 --- !u!81 &1532222289
 AudioListener:
   m_ObjectHideFlags: 0
