@@ -25,7 +25,7 @@ public class ObjectManager : MonoBehaviour
         object_positions = new List<Vector3>();
 
         for (int i = 0; i < 100; i++) {
-            AddObject();
+           // AddObject();
         }
     }
 
@@ -33,12 +33,13 @@ public class ObjectManager : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.N)) {
-            AddObject();
+           // AddObject();
         }
 
         if (Input.GetKeyDown(KeyCode.B)) {
-            Thread thread = new Thread(OctreeThread);
-            thread.Start();
+            octree.BuildOctree();
+            //Thread thread = new Thread(OctreeThread);
+            //thread.Start();
         }
 
         if (Input.GetKeyDown(KeyCode.V)) {
@@ -53,29 +54,29 @@ public class ObjectManager : MonoBehaviour
 
     private void OctreeThread()
     {
-        octree.BuildOctree(object_positions.ToArray());
+        octree.BuildOctree(/*object_positions.ToArray()*/);
         Debug.Log("Done building");
     }
 
     private void OnDrawGizmos()
     {
         if (debug) {
-            var nodes = octree.DebugGetNodes();
+            //var nodes = octree.DebugGetNodes();
 
-            for (int i = 0; i < nodes.Length; i++) {
-                Gizmos.DrawWireCube(nodes[i].position, new Vector3(nodes[i].size, nodes[i].size, nodes[i].size));
-            }
+           // for (int i = 0; i < nodes.Length; i++) {
+        //        Gizmos.DrawWireCube(nodes[i].position, new Vector3(nodes[i].size, nodes[i].size, nodes[i].size));
+        //    }
         }
     }
 
-    public void AddObject()
-    {
-        float x = Random.Range(-size, size);
-        float y = Random.Range(-size, size);
-        float z = Random.Range(-size, size);
-        Vector3 position = new Vector3(x, y, z);
-        Instantiate(cube_prefab, position, Quaternion.identity);
+    //public void AddObject()
+    //{
+    //    float x = Random.Range(-size, size);
+    //    float y = Random.Range(-size, size);
+    //    float z = Random.Range(-size, size);
+    //    Vector3 position = new Vector3(x, y, z);
+    //    Instantiate(cube_prefab, position, Quaternion.identity);
 
-        object_positions.Add(position);
-    }
+    //    object_positions.Add(position);
+    //}
 }
