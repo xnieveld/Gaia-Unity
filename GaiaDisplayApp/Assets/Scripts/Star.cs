@@ -3,92 +3,94 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+/// <summary>
+/// A star class.
+/// </summary>
 [Serializable]
-public class Star
-{
-
-    public struct BasicStar
-    {
-        public Vector3 coordinates;
-        public Vector4 colour;
-        public float magnitude;
-    }
-
+public struct Star
+{  
     
+    public float x; 
+    public float y;
+    public float z;
+    public float r; //red
+    public float g; //green
+    public float b; //blue
+    public float m; //aboslute magnitude
 
-    public string designation;
-    public double ref_epoch;
-    public double ra;
-    public double dec;
-    public double distance;
-    public double x;
-    public double y;
-    public double z;
-    public double pmra;
-    public double pmdec;
-    public double astrometric_pseudo_colour;
-    public float phot_g_mean_mag;
-    public double radial_velocity;
-
-    public List<double> values;
-
-    public static explicit operator BasicStar(Star s)
+    /// <summary>
+    /// Size of a basic star
+    /// </summary>
+    public static int ByteSize
     {
-        BasicStar bs = new BasicStar();
-        bs.coordinates = CartesianToPolarFloat(new double[] { s.x, s.y, s.z }, StarRenderer.Instance.cameraPosition);
-        bs.colour = new Vector4(1, 1, 1, 1);
-        bs.magnitude = s.Magnitude;
-        return bs;
-    }
-
-    /* public double Date { get { return values[0]; } set { values[0] = value; } }
-     public double RightAccension { get { return values[1]; } set { values[1] = value; } }
-     public double Inclination { get { return values[3]; } set { values[3] = value; } }
-     public double Distance { get { return values[5]; } set { values[5] = value; } }
-     //public double Radius { get { return values[0]; } set { values[0] = value; } }
-
-     public double ProperMotionRightAccension { get { return values[7]; } set { values[7] = value; } }
-     public double ProperMotionInclination { get { return values[9]; } set { values[9] = value; } }
-     public double RadialVelocity { get { return values[14]; } set { values[14] = value; } }
-
-     public double Error_RA { get { return values[2]; } set { values[2] = value; } }
-     public double Error_I { get { return values[4]; } set { values[4] = value; } }
-     public double Error_RV { get { return values[15]; } set { values[15] = value; } }
-     public double Error_D { get { return values[6]; } set { values[6] = value; } }
-
-     public double Error_pmRA { get { return values[8]; } set { values[8] = value; } }
-     public double Error_pmI { get { return values[10]; } set { values[10] = value; } }
-
-     public float Magnitude { get { return (float)values[13]; } set { values[13] = value; } }
-     */
-    public double Date { get { return ref_epoch; } set { ref_epoch = value; } }
-    public double RightAccension { get { return ra; } set { ra = value; } }
-    public double Inclination { get { return dec; } set { dec = value; } }
-    public double Distance { get { return distance; } set { distance = value; } }
-    //public double Radius { get { return values[0]; } set { values[0] = value; } }
-
-    public double ProperMotionRightAccension { get { return pmra; } set { pmra = value; } }
-    public double ProperMotionInclination { get { return pmdec; } set { pmdec = value; } }
-    public double RadialVelocity { get { return radial_velocity; } set { radial_velocity = value; } }
-    
-    public float Magnitude { get { return phot_g_mean_mag; } set { phot_g_mean_mag = value; } }
-
-    public Star(double ra, double i, double d, double r, double pmRA, double pmI, float m)
-    {
-        if (values == null)
+        get
         {
-            values = new List<double>();
+            return 120;
         }
-        RightAccension = ra;
-        Inclination = i;
-        Distance = d;
-        ProperMotionRightAccension = pmRA;
-        ProperMotionInclination = pmI;
-        //radius = r;
-        Magnitude = m;
     }
 
-    public Color ColorTemperature(float t)
+   
+
+    /// <summary>
+    /// Cast a star into a byte array.
+    /// </summary>
+    /// <param name="s"></param>
+    public static explicit operator Byte[](Star s)
+    {
+        Byte[] ba = new byte[ByteSize];        
+        ba = (byte[])s;
+        return ba;
+    }
+
+    
+
+    public Star(float x, float y, float z, float m, float r, float g, float b)
+    {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.m = m;
+    }
+    /*
+        /// <summary>
+        /// Estimate temperature of star based on absolute magnitude, and the HR Diagram.
+        /// </summary>
+        /// <param name="absoluteMag"Absolute Magnitude></param>
+        /// <returns>Educated guess to the temperature in kelvin</returns>
+        public static float EstimateTemperature(float absoluteMag)
+        {
+            float temp = 0;
+            if (absoluteMag > 12.5) {temp = Random.Range(1200,1800);}
+            else if (absoluteMag > 10) {temp = Random.Range(2000, 3200);}
+            else if (absoluteMag > 6) {temp = Random.Range(3000, 5000);}
+            else if (absoluteMag > 4) {
+                temp = Random.Range(4500, 6500);
+                if (Random.nextFloat < 0.1) {temp = 2500;}
+            }
+            else if (absoluteMag > 2) {
+                temp = Random.Range(4800, 7500);
+                if (Random.nextFloat < 0.1) {temp = Random.Range(2000, 6000);}
+            }
+            else if (absoluteMag > -1) {
+                temp = Random.Range(7000, 12000);
+                if (Random.nextFloat < 0.5) {temp = Random.Range(1000, 6500);}
+            }
+            else {
+                temp = Random.Range(10000, 40000);
+                if (Random.nextFloat < 0.3) {temp = Random.Range(5000, 12000);}
+            }
+            return temp;
+        }*/
+
+    /// <summary>
+    /// Calculate an RBG colour from a given temperature
+    /// </summary>
+    /// <param name="t">Temperature in Kelvin between 1000 and 40000</param>
+    /// <returns>RGB Aproximate equivalent</returns>
+    public static Color ColorTemperature(float t)
     {
         Color color = new Color(0,0,0);
 
@@ -150,7 +152,7 @@ public class Star
                 polar[0] = Math.PI;
             }
         }
-        polar[1] = Math.Asin(cartesianCorrected[1] / polar[2]);
+        polar[1] = Math.Acos(cartesianCorrected[1] / polar[2]);
 
         return polar;
     }
@@ -169,7 +171,7 @@ public class Star
             return polar;
         }
 
-        double[] cartesianCorrected = new double[3] { cartesian[0] - center[0], cartesian[1] - center[1], cartesian[2] - center[3] };
+        double[] cartesianCorrected = new double[3] { cartesian[0] - center[0], cartesian[1] - center[1], cartesian[2] - center[2] };
 
 
         polar[2] = (float)Math.Sqrt(Math.Pow(cartesianCorrected[0], 2) + Math.Pow(cartesianCorrected[1], 2) + Math.Pow(cartesianCorrected[2], 2));
@@ -190,7 +192,7 @@ public class Star
                 polar[0] = (float)Math.PI;
             }
         }
-        polar[1] = (float)Math.Asin(cartesianCorrected[1] / polar[2]);
+        polar[1] = (float)Math.Acos(cartesianCorrected[1] / polar[2]);
 
         return polar;
     }

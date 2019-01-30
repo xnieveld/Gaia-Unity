@@ -1,0 +1,98 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+#pragma kernel CSClear
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+uint textureHeight;
+uint textureWidth;
+uint xChunks;
+uint yChunks;
+uint starCount;
+uint starsPerChunkX;
+uint starsPerChunkY;
+float xMin, xMax, yMin, yMax;
+float magIncrease;
+float zoom;
+float3 playerPos;
+
+struct Star {
+	float3 starCoord;
+	float4 starColour;
+	float starMagnitude;
+};
+
+
+StructuredBuffer<Star> starList;
+RWTexture2D<float4> Result;
+
+float3 CartesianToPolar(float3 coord, float3 origin) {
+	float3 correctedCoord = coord - origin;
+	float3 returnCoord = float3(0, 0, 0);
+	returnCoord.z = length(correctedCoord);
+
+	returnCoord.x = atan(correctedCoord.z / correctedCoord.x);
+	
+	if (isnan(returnCoord.x))
+	{
+		if (correctedCoord.x >= 0)
+		{
+			returnCoord.x = 0;
+		}
+		else
+		{
+			returnCoord.x = 3.14159;
+		}
+	}
+	else if (correctedCoord.x >= 0)
+	{
+		returnCoord.x += 3.14159;
+	}
+	returnCoord.y = asin(correctedCoord.y / returnCoord.z);
+
+	return returnCoord;
+}
+
+
+//Make the 1st number be the same as xChunks, and the 2nd as yChunk vv
+[numthreads(1000,1,1)] 
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	uint starID = id.x;
+	//float3 polarCoords = CartesianToPolar(starCoords[starID], cameraPos);
+	float3 polarCoords = starList[starID].starCoord;
+	int2 pos = int2(0,0);
+
+	pos.x = textureWidth / (xMax - xMin) * (polarCoords.x - xMin);
+	pos.y = textureHeight / (yMax - yMin) * (polarCoords.y - yMin);
+
+	float apparentMag = 5 * log10(polarCoords.z / 10) + starList[starID].starMagnitude;
+	apparentMag = starList[starID].starMagnitude;
+	float4 luminosity = /*255 * */pow(2, ((-apparentMag) - 2 + magIncrease));
+
+	if (pos.x >= 0 && pos.x < textureWidth && pos.y >= 0 && pos.y < textureHeight) {
+		Result[pos] = normalize(starList[starID].starColour) * luminosity;
+	}
+}
+
+
+//Make the 1st number be the same as xChunks, and the 2nd as yChunk vv
+[numthreads(8, 8, 1)]
+void CSClear(uint3 id : SV_DispatchThreadID)
+{
+	Result[id.xy] = float4(0, 0, 0, 0);
+}
+
+/*
+
+rgb,   mag
+510 = -3
+255 = -2
+128 = -1
+64 = 0
+32 = 1
+16 = 2
+8 = 3
+4 = 4
+2 = 5
+1 = 6*/

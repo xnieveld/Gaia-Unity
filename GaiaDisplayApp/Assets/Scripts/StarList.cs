@@ -2,9 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
+/// <summary>
+/// A class containing a list of stars
+/// </summary>
+[Serializable]
 public class StarList {
-    public List<MetaData> metadata;
+    //public List<MetaData> metadata;
     public List<Star> data;
 
     public int Count
@@ -15,54 +20,28 @@ public class StarList {
         }
     }
 
-    public List<Star.BasicStar> Stars
+
+    /// <summary>
+    /// Get a list of basic stars to send to the GPU
+    /// </summary>
+    public List<Star> Stars
     {
         get
         {
-            List<Star.BasicStar> stars = data.Cast<Star.BasicStar>().ToList();
-            return stars;
+            return data;
         }
     }
 
-    public Vector4[] StarCoords
+    /// <summary>
+    /// Merge another startlist into this starlist.
+    /// </summary>
+    /// <param name="newList">The starlist to merge into this one.</param>
+    public void Merge(StarList newList)
     {
-        get
+        if (data == null)
         {
-            Vector4[] coords = new Vector4[data.Count];
-            for (int i = 0; i < data.Count; i++)
-            {
-                coords[i] = new Vector4((float)data[i].RightAccension, (float)data[i].Inclination+90, (float)data[i].Distance);
-                //Debug.Log(new Vector3(Mathf.Round(coords[i].x), Mathf.Round(coords[i].y), Mathf.Round(coords[i].z)));
-            }
-            return coords;
+            data = new List<Star>();
         }
-    }
-
-    public float[] StarMags
-    {
-        get
-        {
-            float[] mags = new float[data.Count];
-            for(int i = 0; i < data.Count; i++)
-            {
-                mags[i] = data[i].Magnitude;
-            }
-            return mags;
-        }
-    }
-
-    public Vector4[] StarColours
-    {
-        get
-        {
-            Vector4[] colours = new Vector4[data.Count];
-            System.Random r = new System.Random();
-            for (int i = 0; i < data.Count; i++)
-            {
-                colours[i] = /*(float)(NormalizedRandom.NextGaussianDouble(r) + 3) * Random.value * 5 * */data[0].ColorTemperature((float)(NormalizedRandom.NextGaussianDouble(r) + 3) * 2000);
-                //colours[i] = new Vector4(1, 1, 1, 1);    
-            }
-            return colours;
-        }
+        data.AddRange(newList.data);
     }
 }

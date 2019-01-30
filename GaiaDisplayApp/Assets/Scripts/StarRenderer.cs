@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+/// <summary>
+/// Renderer of the stars.
+/// </summary>
 public class StarRenderer : MonoBehaviour {
 
     private static StarRenderer instance;
@@ -16,7 +19,9 @@ public class StarRenderer : MonoBehaviour {
     public int textureHeight = 1080;
     public int xChunks = 10;
     public int yChunks = 10;
-    public int starCount = 10000; // (8 * 20)^2
+    public int starCount = 6000000; // (8 * 20)^2
+
+    bool clear = true;
 
     RenderTexture renderTex;
 
@@ -39,25 +44,19 @@ public class StarRenderer : MonoBehaviour {
     const int UpScalePass = 2;
     const int MergePass = 3;
     const int MergePassBackDrop = 4;
-    double xs = 0;
-    double xx = 360;
-    double ys = 0;
-    double yx = 180;
-    double xc = 180;
-    double yc = 90;
-    double w = 360;
-    double h = 180;
-    double zoom = 1;
-    float magIncrease = 0;
+    float magIncrease = 13;
 
     RenderTexture[] textures = new RenderTexture[16];
-    public double[] cameraPosition = new double[] { 0, 0, 0 };
+
+    PlayerMovement player;
+    public PlayerMovement Player { get { return player; } }
+    public bool reRender = true;
 
     private void Awake()
     {
         if (instance == null)
         {
-            DontDestroyOnLoad(gameObject);
+           // DontDestroyOnLoad(gameObject);
             instance = this;
         }
         else
@@ -69,17 +68,31 @@ public class StarRenderer : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        //starList = JSONReader.ParseStarJSON(JSONReader.ReadJSON("data-NaN-temp_Max"));
-        starList = JSONReader.ParseStarJSON(JSONReader.ReadJSON("data-750k-null"));
+        player = GetComponent<PlayerMovement>();
+        // starList = JSONReader.ParseStarJSON(JSONReader.ReadJSON("gaia-parsed0"));
+        textureHeight = Screen.height;
+        textureWidth = Screen.width;
+
+        starList = JSONReader.ParseStarJSONList(JSONReader.ReadJSONFiles("gaia", 1));
+        //BinaryManager.StarListToBinary(starList, "aapje");
+        //starList = BinaryManager.BinaryToStarList("aapje");
+
         renderTex = new RenderTexture(textureWidth, textureHeight, 24, RenderTextureFormat.ARGBFloat);
         renderTex.enableRandomWrite = true;
         renderTex.Create();
-        
-        RenderStars(true, true);
-	}
 
+        RenderStars(true, true);
+    }
+
+    /// <summary>
+    /// Render all visible stars onto a texture. 
+    /// </summary>
+    /// <param name="updateStars"></param>
+    /// <param name="newTex"></param>
     private void RenderStars(bool updateStars, bool newTex)
     {
+        ComputeBuffer starBuffer = null;
+        ComputeBuffer returnStarBuffer = null;
         if (newTex)
         {
             renderTex = RenderTexture.GetTemporary(textureWidth, textureHeight, 24, RenderTextureFormat.ARGBFloat);
@@ -88,50 +101,87 @@ public class StarRenderer : MonoBehaviour {
             renderTex.Create();
         }
         int kernel = starRenderShader.FindKernel("CSClear");
-        starRenderShader.SetTexture(kernel, "Result", renderTex);
-        starRenderShader.Dispatch(kernel, renderTex.width / 7, renderTex.height / 7, 1);
+        if (clear)
+        {
+            starRenderShader.SetTexture(kernel, "Result", renderTex);
+            starRenderShader.Dispatch(kernel, renderTex.width / 7, renderTex.height / 7, 1);
+        }
 
         kernel = starRenderShader.FindKernel("CSMain");
 
         starRenderShader.SetInt("textureHeight", textureHeight);
         starRenderShader.SetInt("textureWidth", textureWidth);
-        starRenderShader.SetFloat("xMin", (float)xs);
-        starRenderShader.SetFloat("xMax", (float)xx);
-        starRenderShader.SetFloat("yMin", (float)ys);
-        starRenderShader.SetFloat("yMax", (float)yx);
+
+        //transform.eulerAngles ipv EulerAnglesOrientation
+        float leftBound = player.EulerAnglesOrientation.x - (float)(player.FoV / 2);
+        float rightBound = player.EulerAnglesOrientation.x + (float)(player.FoV / 2);
+        float downBound = player.EulerAnglesOrientation.y - (float)(player.FoV * ((float)Screen.height / Screen.width) / 2);
+        float upBound = player.EulerAnglesOrientation.y + (float)(player.FoV * ((float)Screen.height / Screen.width) / 2);
+        bool exceedLeft = false;
+        bool exceedRight = false;
+        bool exceedDown = false;
+        bool exceedUp = false;
+
+        int kernerlStarNumber = starCount / 1000;
+
+        //if any of these are true, render a 2nd texture, and merge the two. 
+        if (leftBound < 0)
+        {
+            exceedLeft = true;
+        }
+        if (downBound < 0)
+        {
+            exceedDown = true;
+        }
+        if (rightBound > 360)
+        {
+            exceedRight = true;
+        }
+        if (upBound > 180)
+        {
+            exceedUp = true;
+        }
+
+        leftBound /= 180f / Mathf.PI;
+        rightBound /= 180f / Mathf.PI;
+        downBound /= 180f / Mathf.PI;
+        upBound /= 180f / Mathf.PI;
+        float twisty = player.EulerAnglesOrientation.z / 180 * Mathf.PI;
+
+
+        starRenderShader.SetFloat("playerAngle1", player.EulerAnglesOrientation.x / 180 * Mathf.PI);
+        starRenderShader.SetFloat("playerAngle2", player.EulerAnglesOrientation.y / 180 * Mathf.PI);
+        starRenderShader.SetFloat("playerAngle3", twisty);
+        starRenderShader.SetMatrix("rotationMatrix", player.rotationMatrix);
+
+        starRenderShader.SetFloat("horizontalAngleLeftBound", leftBound);
+        starRenderShader.SetFloat("horizontalAngleRightBound", rightBound);
+        starRenderShader.SetFloat("verticalAngleLeftBound", downBound);
+        starRenderShader.SetFloat("verticalAngleRightBound", upBound);
+        starRenderShader.SetFloat("twistyAngle", twisty);
+        starRenderShader.SetFloat("fovh", (float)player.FoV / 180f * Mathf.PI);
+        starRenderShader.SetFloat("fovv", ((float)player.FoV * ((float)Screen.height / Screen.width)) / 180f * Mathf.PI);
+
         starRenderShader.SetFloat("magIncrease", magIncrease);
-        starRenderShader.SetFloat("zoom", (float)zoom);
+        
+        starRenderShader.SetVector("playerPos", player.PositionFloat);
 
         if (updateStars)
         {
-            ComputeBuffer buffer_0 = new ComputeBuffer(starList.StarCoords.Length, sizeof(float) * 4);
-            buffer_0.SetData(starList.StarCoords);
-            starRenderShader.SetBuffer(0, "starCoords", buffer_0);
-
-            ComputeBuffer buffer_1 = new ComputeBuffer(starList.StarColours.Length, sizeof(float) * 4);
-            buffer_1.SetData(starList.StarColours);
-            starRenderShader.SetBuffer(0, "starColours", buffer_1);
-
-            ComputeBuffer buffer_2 = new ComputeBuffer(starList.StarMags.Length, sizeof(float));
-            buffer_2.SetData(starList.StarMags);
-            starRenderShader.SetBuffer(0, "starMagnitudes", buffer_2);
-
-            /*ComputeBuffer buffer_3 = new ComputeBuffer(starList.Count, sizeof(float) * 8);
-            buffer_3.SetData(starList.Stars);
-            starRenderShader.SetBuffer(0, "stars", buffer_3);*/
-
-            starRenderShader.SetFloat("starsPerChunkX", 1000);
-            starRenderShader.SetFloat("starsPerChunkY", 1000);
+            if (starBuffer != null)
+            {
+                starBuffer.Release();
+            }
+            starBuffer = new ComputeBuffer(starList.Count, sizeof(float) * 7);
+            starBuffer.SetData(starList.Stars);
+            print(starList.Stars[0].x);
+            starRenderShader.SetBuffer(0, "starList", starBuffer);
+            starRenderShader.SetFloat("starsPerChunkX", 3000);
         }
         
         starRenderShader.SetTexture(kernel, "Result", renderTex);
-        //starRenderShader.SetVectorArray("starCoords", starList.StarCoords);
-        //starRenderShader.SetVectorArray("starColours", starList.StarColours);
-        //starRenderShader.SetFloats("starMagnitudes", starList.StarMags);
-
-        //        starRenderShader.Dispatch(kernel, textureWidth / xChunks, textureHeight / yChunks, 1);
-        //starRenderShader.Dispatch(kernel, (int)Mathf.Sqrt(starCount) / xChunks, (int)Mathf.Sqrt(starCount) / yChunks, 1);
-        starRenderShader.Dispatch(kernel, 750, 1, 1);
+        starRenderShader.Dispatch(kernel, 3000, 1, 1);
+        
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination)
@@ -209,58 +259,24 @@ public class StarRenderer : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-        bool change = false;
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            change = true;
-        }
-        if (Input.GetKey(KeyCode.O))
-        {
-            zoom *= 1.03f;
-            change = true;
-        }
-        if (Input.GetKey(KeyCode.P))
-        {
-            zoom /= 1.03f;
-            change = true;
-        }
-        if (Input.GetKey(KeyCode.UpArrow))
-        {
-            yc += zoom * h * 0.01f;
-            change = true;
-        }
-        if (Input.GetKey(KeyCode.DownArrow))
-        {
-            yc -= zoom * h * 0.01f;
-            change = true;
-        }
-        if (Input.GetKey(KeyCode.RightArrow))
-        {
-            xc += zoom * w * 0.01f;
-            change = true;
-        }
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            xc -= zoom * w * 0.01f;
-            change = true;
-        }
         if (Input.GetKey(KeyCode.Comma))
         {
             magIncrease -= 0.05f;
-            change = true;
+            reRender = true;
         }
         if (Input.GetKey(KeyCode.Period))
         {
             magIncrease += 0.05f;
-            change = true;
+            reRender = true;
         }
-        if (change)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            xs = xc - zoom * w / 2;
-            xx = xc + zoom * w / 2;
-            ys = yc - zoom * h / 2;
-            yx = yc + zoom * h / 2;
+            clear = !clear;
+        }
+        if (reRender)
+        {
             RenderStars(false, false);
+            reRender = false;
         }
     }
 }

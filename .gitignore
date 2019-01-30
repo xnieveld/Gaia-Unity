@@ -34,3 +34,5 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+GaiaDisplayApp/Assets/gaia0\.json
