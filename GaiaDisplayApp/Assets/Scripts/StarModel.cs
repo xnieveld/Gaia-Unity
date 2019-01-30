@@ -7,9 +7,24 @@ using UnityEngine;
 /// </summary>
 public class StarModel : MonoBehaviour {
 
-    DoubleVector3 truePosition = new DoubleVector3(); //The true position of the star in double coordinates. 
+    /// <summary>
+    /// True position of the star
+    /// </summary>
+    DoubleVector3 truePosition = new DoubleVector3();
+    
+    /// <summary>
+    /// Mesh of the model
+    /// </summary>
     Mesh mesh;
+
+    /// <summary>
+    /// Renderer of the mesh
+    /// </summary>
     private MeshRenderer renderer;
+
+    /// <summary>
+    /// Material of the mesh
+    /// </summary>
     private Material material;
 
     // Use this for initialization
@@ -21,25 +36,34 @@ public class StarModel : MonoBehaviour {
 
     }
 	
-	// Update is called once per frame
+	/// <summary>
+    /// Update the star's position
+    /// </summary>
 	void Update () {
         UpdatePosition();
 
     }
 
+    /// <summary>
+    /// Apply the star's parameters onto the model
+    /// </summary>
+    /// <param name="star">The star</param>
     public void SetParameters(Star star)
     {
-        truePosition = new DoubleVector3(star.x, star.y, star.z);
-        UpdatePosition();
-        material.SetColor("_ColorTemperature", Color.white);
+        truePosition = new DoubleVector3(star.x, star.y, star.z); //Stars currently do not use double precision as the GPU cannot use that. 
+        UpdatePosition(); //Update the position
+        material.SetColor("_ColorTemperature", new Color(star.r, star.g, star.b)); //Set the color temperature
         material.SetFloat("_Brightness", star.m);
     }
 
+    /// <summary>
+    /// Update the position of the star
+    /// </summary>
     private void UpdatePosition()
     {
         DoubleVector3 deltaPosition = truePosition - StarRenderer.Instance.Player.Position;
-        transform.position = (Vector3)deltaPosition / 1000000;
-        if (transform.position.magnitude > 100000)
+        transform.position = (Vector3)deltaPosition;
+        if (transform.position.magnitude > 10) //If the star is too far, delete the model. Number is arbitrary.
         {
             GameObject.Destroy(gameObject);
         }

@@ -6,16 +6,34 @@ using UnityEngine;
 /// This class contains the player movement. The player moves in their own coordinate system, not using Unity's coords.
 /// </summary>
 public class PlayerMovement : MonoBehaviour {
-    
+    /// <summary>
+    /// Player position
+    /// </summary>
     DoubleVector3 position = new DoubleVector3();
-    Vector3 eulerAnglesOrientation = new Vector3(180, 90, 0);
-    double fov = 90;
-    GameObject starPrefab;
-    List<GameObject> currentModelStars = new List<GameObject>();
-    public Matrix4x4 rotationMatrix = new Matrix4x4();
 
     /// <summary>
-    /// Load a new star model. 
+    /// Look orientation
+    /// </summary>
+    Vector3 eulerAnglesOrientation = new Vector3(180, 90, 0);
+
+    /// <summary>
+    /// Horizontal field of view
+    /// </summary>
+    double fov = 90;
+
+    /// <summary>
+    /// Prefab of a star model
+    /// </summary>
+    GameObject starPrefab;
+
+    /// <summary>
+    /// List of currently model-loaded in stars.
+    /// </summary>
+    List<GameObject> currentModelStars = new List<GameObject>();
+
+
+    /// <summary>
+    /// Load a new star model. (Not currently used)
     /// </summary>
     /// <param name="star">The parameters of the star to be loaded.</param>
     public void LoadStar(Star star)
@@ -23,15 +41,13 @@ public class PlayerMovement : MonoBehaviour {
         GameObject newStar = GameObject.Instantiate(starPrefab);
         newStar.GetComponent<StarModel>().SetParameters(star);
         currentModelStars.Add(newStar);
-
-        ///Hoe vinden we welke sterren dichtbij genoeg zijn? .. hm.. Misschien een deel van de shader dat ie ook een list terugstuurt, een uitleesbare buffer, waarin gekeken wordt of de ster dichtbij genoeg is.
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        bool change = false;
+        bool change = false; //Have any settings changed?
         float speed = 1;
         transform.rotation = Quaternion.Euler(eulerAnglesOrientation);
         if (Input.GetKey(KeyCode.LeftShift))
@@ -57,7 +73,6 @@ public class PlayerMovement : MonoBehaviour {
         {
             //transform.Rotate(new Vector3(0, (float)fov / 90, 0));
             float a = (float)fov / 90;
-            rotationMatrix *= new Matrix4x4(new Vector4(Mathf.Cos(a), Mathf.Sin(a), 0, 0), new Vector4(-Mathf.Sin(a), Mathf.Cos(a), 0, 0), new Vector4(0, 0, 1, 0), new Vector4(0, 0, 0, 1));
             eulerAnglesOrientation.y += (float)fov / 90;
             change = true;
         }
@@ -65,35 +80,30 @@ public class PlayerMovement : MonoBehaviour {
         {
             //transform.Rotate(new Vector3(0, -(float)fov / 90, 0));
             float a = -(float)fov / 90;
-            rotationMatrix *= new Matrix4x4(new Vector4(Mathf.Cos(a), Mathf.Sin(a), 0, 0), new Vector4(-Mathf.Sin(a), Mathf.Cos(a), 0, 0), new Vector4(0, 0, 1, 0), new Vector4(0, 0, 0, 1));
             eulerAnglesOrientation.y -= (float)fov / 90;
             change = true;
         }
         if (Input.GetKey(KeyCode.RightArrow))
         {
             float a = (float)fov / 90;
-            rotationMatrix *= new Matrix4x4(new Vector4(Mathf.Cos(a),0,  -Mathf.Sin(a), 0), new Vector4(0, 1, 0, 0), new Vector4(Mathf.Sin(a), 0, Mathf.Cos(a), 0), new Vector4(0, 0, 0, 1));
             eulerAnglesOrientation.x += (float)fov / 90;
             change = true;
         }
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             float a = -(float)fov / 90;
-            rotationMatrix *= new Matrix4x4(new Vector4(Mathf.Cos(a), 0, -Mathf.Sin(a), 0), new Vector4(0, 1, 0, 0), new Vector4(Mathf.Sin(a), 0, Mathf.Cos(a), 0), new Vector4(0, 0, 0, 1));
             eulerAnglesOrientation.x -= (float)fov / 90;
             change = true;
         }
         if (Input.GetKey(KeyCode.Z))
         {
             float a = -1;
-            rotationMatrix *= new Matrix4x4(new Vector4(1, 0, 0, 0), new Vector4(0, Mathf.Cos(a), Mathf.Sin(a), 0), new Vector4(0, -Mathf.Sin(a), Mathf.Cos(a), 0), new Vector4(0, 0, 0, 1));
             eulerAnglesOrientation.z -= 1;
             change = true;
         }
         if (Input.GetKey(KeyCode.X))
         {
             float a = 1;
-            rotationMatrix *= new Matrix4x4(new Vector4(1, 0, 0, 0), new Vector4(0, Mathf.Cos(a), Mathf.Sin(a), 0), new Vector4(0, -Mathf.Sin(a), Mathf.Cos(a), 0), new Vector4(0, 0, 0, 1));
             eulerAnglesOrientation.z += 1;
             change = true;
         }
@@ -120,23 +130,29 @@ public class PlayerMovement : MonoBehaviour {
         }
         if (change)
         {
-            eulerAnglesOrientation.x = ClampAngle(eulerAnglesOrientation.x);
-            eulerAnglesOrientation.y = ClampAngle(eulerAnglesOrientation.y, true);
-            eulerAnglesOrientation.z = ClampAngle(eulerAnglesOrientation.z);
+            eulerAnglesOrientation.x = WrapAngle(eulerAnglesOrientation.x);
+            eulerAnglesOrientation.y = WrapAngle(eulerAnglesOrientation.y, true);
+            eulerAnglesOrientation.z = WrapAngle(eulerAnglesOrientation.z);
             if (fov < 0.01)
             {
                 fov = 0.01;
             }
             if (fov > 170)
             {
-                //fov = 170;
+                fov = 170;
             }
             //print(eulerAnglesOrientation);
             StarRenderer.Instance.reRender = true;
         }
     }
 
-    private float ClampAngle(float angle,  bool half = false)
+    /// <summary>
+    /// Wrap an angle such that 361 becomes 1, and similar. 
+    /// </summary>
+    /// <param name="angle">The angle to wrap</param>
+    /// <param name="half">Wrap it between 0 and 180</param>
+    /// <returns>The wrapped angle</returns>
+    private float WrapAngle(float angle,  bool half = false)
     {
         float maxVal = 360;
         if (half)
@@ -181,7 +197,7 @@ public class PlayerMovement : MonoBehaviour {
     public Vector3 EulerAnglesOrientation
     {
         get
-        {
+        {/* //atempt at getting proper angles from quaternions, failed.
             Vector3 forwardPoint = transform.forward;
             Vector3 orientation = new Vector3();
 
@@ -205,7 +221,7 @@ public class PlayerMovement : MonoBehaviour {
             orientation.x = Mathf.Acos(forwardPoint.y);
             orientation.z = eulerAnglesOrientation.z;
             orientation.x *= 180 / Mathf.PI;
-            orientation.y *= 180 / Mathf.PI;
+            orientation.y *= 180 / Mathf.PI;*/
 
             return eulerAnglesOrientation;
         }

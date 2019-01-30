@@ -50,7 +50,7 @@
 			{
 				// sample the texture
 				fixed4 col = tex2D(_MainTex, i.uv);
-				return col * _Brightness * _ColorTemperature;;
+				return col * _Brightness * _ColorTemperature; //Get the (monochrome) texture, and mutliply by the color and brightness.
 			}
 			ENDCG
 		}

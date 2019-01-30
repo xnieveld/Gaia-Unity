@@ -1,10 +1,10 @@
-﻿Shader "Custom/BloomShader"
+﻿
+Shader "Custom/BloomShader"
 {
 	Properties
 	{
-		_MainTex("Texture", 2D) = "white" {}	
-		
-		_Width("TextureSize", Float) = 128
+		_MainTex("Texture", 2D) = "white" {} //Texture to apply to bloom to (the renderImage)		
+		_Width("TextureSize", Float) = 128 
 		_Height("TextureSize", Float) = 128
 	}
 		
@@ -35,13 +35,15 @@
 		half _Power;
 		half _Exposure;
 
+		//Look up a pixel at a certain position
 		half3 Sample(float2 uv) {
 			return tex2D(_MainTex, uv).rgb;
 		}
 
 
+		//Get the average of a 3x3 pixelbox for down and up scaling
 		half3 SampleBox(float2 uv, float delta) {
-			/*float4 o = _MainTex_TexelSize.xyxy * float2(-delta, delta).xxyy;
+			/*float4 o = _MainTex_TexelSize.xyxy * float2(-delta, delta).xxyy;  //a 2x2 samplebox
 			half3 s =
 				Sample(uv + o.xy) + Sample(uv + o.zy) +
 				Sample(uv + o.xw) + Sample(uv + o.zw) + 
@@ -69,6 +71,7 @@
 			half4 frag(v2f i) : SV_Target{
 			half3 color = SampleBox(i.uv, 1);
 
+			//Filter only for bright pixels
 			half brightness = max(color.r, max(color.g, color.b));
 			half contribution = max(0, brightness - _Threshold);
 			contribution /= max(brightness, 0.00001);
@@ -79,7 +82,7 @@
 		}
 
 		Pass
-		{ // 1
+		{ // 1 //Downscale
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
@@ -91,7 +94,7 @@
 		}
 
 		Pass
-		{ // 2
+		{ // 2 //Upscale
 			Blend One One
 			CGPROGRAM
 			#pragma vertex vert
@@ -104,7 +107,7 @@
 		}
 
 		Pass
-		{ // 3
+		{ // 3 //Bloom
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
@@ -118,7 +121,7 @@
 		}
 
 		Pass
-		{ // 4
+		{ // 4 //Merge with the foreground
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag

@@ -9,9 +9,14 @@ using System;
 /// </summary>
 [Serializable]
 public class StarList {
-    //public List<MetaData> metadata;
-    public List<Star> data;
+    /// <summary>
+    /// The list of stars
+    /// </summary>
+    public List<Star> data; 
 
+    /// <summary>
+    /// Number of stars
+    /// </summary>
     public int Count
     {
         get

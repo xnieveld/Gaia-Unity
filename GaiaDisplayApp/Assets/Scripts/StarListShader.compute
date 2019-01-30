@@ -6,24 +6,17 @@
 // with cs.SetTexture
 uint textureHeight;
 uint textureWidth;
-uint xChunks;
-uint yChunks;
 uint starCount;
-uint starsPerChunkX;
-uint starsPerChunkY;
+uint starsPerChunk;
 float magIncrease;
 float3 playerPos;
-matrix rotationMatrix;
 float playerAngle1;
 float playerAngle2;
-float horizontalAngleLeftBound;
-float horizontalAngleRightBound;
-float verticalAngleLeftBound;
-float verticalAngleRightBound;
+float twistyAngle;
 float fovh;
 float fovv;
-float twistyAngle;
 
+//Star struct, MUST be identical to star object.
 struct Star {
 	float x; 
     float y;
@@ -31,13 +24,15 @@ struct Star {
     float r; //red
     float g; //green
     float b; //blue
-    float m;
+    float m; //Magnitude
 };
 
 
-StructuredBuffer<Star> starList;
-RWTexture2D<float4> Result;
+StructuredBuffer<Star> starList; //Buffer of stars
+RWTexture2D<float4> Result; //Texture
 
+
+//Convert cartesian coordinates to polar coordinates
 float3 CartesianToPolar(float3 coord, float3 origin) {
 	float3 correctedCoord = coord - origin;
 	float3 returnCoord = float3(0, 0, 0);
@@ -64,6 +59,7 @@ float3 CartesianToPolar(float3 coord, float3 origin) {
 	return returnCoord;
 }
 
+//Wrap an agnle such that 361 degrees becomes 1. Except in radians. Angle 2 is between 0 and 180 degrees
 float2 WrapAngle(float2 angle)
 {
 	float maxVal = 3.14159265;
@@ -86,6 +82,7 @@ float2 WrapAngle(float2 angle)
 	return angle;
 }
 
+//Wrap a single angle such that 361 becomes 1, wrap at 180 if halving.
 float WrapAngle1(float angle, bool halving = false) {
 	float maxVal = 6.2831853;
 	if (halving)
@@ -99,6 +96,7 @@ float WrapAngle1(float angle, bool halving = false) {
 	return angle;
 }
 
+//Get the angle between 2 angles
 float AngleBetweenAngles(float angle1, float angle2) {
 	float d = 0;
 
@@ -116,7 +114,9 @@ float AngleBetweenAngles(float angle1, float angle2) {
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
 	uint starID = id.x;
-	float3 polarCoords = CartesianToPolar(float3(starList[starID].x, starList[starID].y, starList[starID].z), playerPos);
+	float3 polarCoords = CartesianToPolar(float3(starList[starID].x, starList[starID].y, starList[starID].z), playerPos); //Get the polar coords.
+
+	///This whole bit is important, but not functional now.
 	/*/
 	float phi_1 = (playerAngle2 - 3.14159265 / 2);
 	float phi = -polarCoords.y;
@@ -134,9 +134,10 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 	x += 0.5;
 	y += 0.5 * (fovv / fovh);
 
-	
+	//This projection will draw stars of both hemispheres (in front of and behind the player) onto the same plane, so filter 
+	//such that only stars with an angle to the player's view direction smaller than 90 degrees will be drawn.
+	 
 	float xAngle = AngleBetweenAngles(polarCoords.x, playerAngle1);
-
 	float yAngle = AngleBetweenAngles(polarCoords.y, playerAngle2);
 	bool a = abs(xAngle) < 3.14159265 / 2;
 	bool b = abs(yAngle) < 3.14159265 / 2;
@@ -145,12 +146,12 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 	float2 pos2 = float2(x * textureWidth, y * textureHeight);*/
 	
 	float2 pos;
-	polarCoords -= float3(playerAngle1 - fovh / 2, playerAngle2 - fovv / 2, 0);
-	polarCoords.xy = WrapAngle(polarCoords.xy);
+	polarCoords -= float3(playerAngle1 - fovh / 2, playerAngle2 - fovv / 2, 0); //Subtract the player look direction.
+	polarCoords.xy = WrapAngle(polarCoords.xy); //Wrap coords, this will make stars on the other side of the 
 	pos.x = (textureWidth / fovh) * (polarCoords.x);
 	pos.y = (textureHeight / fovv) * (polarCoords.y);
 	pos.x -= (textureWidth / 2);
-	pos.y -= (textureHeight / 2);
+	pos.y -= (textureHeight / 2); //This will essentially draw part of an equirectangular map. It is not perspective. The edges will be very strange.
 	float2 pos2 = pos;
 	pos2.x = pos.x * cos(twistyAngle) - pos.y * sin(twistyAngle);
 	pos2.y = pos.y * cos(twistyAngle) + pos.x * sin(twistyAngle);
@@ -158,32 +159,30 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 	pos2.y += textureHeight / 2;
 	
 	///Simulate perspective
-	float2 toCenter = float2(textureWidth / 2, textureHeight / 2) - pos2;
-	float distanceToCenter = sqrt(pow(toCenter.x, 2) + pow(toCenter.y, 2));
-	float displacementRatio = distanceToCenter / (textureHeight / 2);
-	pos2 -= toCenter * displacementRatio * 0.15 / 1.5707 * fovh; //half pi, aka 90 degrees
+	float2 toCenter = float2(textureWidth / 2, textureHeight / 2) - pos2; //Find pixel vector to center.
+	float distanceToCenter = sqrt(pow(toCenter.x, 2) + pow(toCenter.y, 2)); //Find pixel distance to center
+	float displacementRatio = distanceToCenter / (textureHeight / 2); //Calculate a ratio compared to the edge
+	pos2 -= toCenter * displacementRatio * 0.15 / 1.5707 * fovh; //half pi, aka 90 degrees //Displace the star the further it is from the center to simulate perspective.
 	
 	
 	float2 pos3 = pos2;
-	//int2 pos3 = int2((int)pos2.x, (int)pos2.y);
-	float apparentMag = 5 * log10(polarCoords.z / 10) + starList[starID].m;
-	float4 luminosity = /*255 * */pow(2, ((-apparentMag) - 2 + magIncrease));
+	float apparentMag = 5 * log10(polarCoords.z / 10) + starList[starID].m; //Calculate apparent magnitude based on player position and absolute magnitude.
+	float4 luminosity = 255 * pow(2, ((-apparentMag) - 2 + magIncrease)); //Calculate luminosity based on apparent magnitude. 5 magnitude lower = 100x as bright. Take pixel logarythic screen luminosity into account. 
 
-	if (pos3.x >= 0 && pos3.x < textureWidth && pos3.y >= 0 && pos3.y < textureHeight){// && visible) {
-		Result[pos3] = normalize(float4(starList[starID].r, starList[starID].g, starList[starID].b, 1)) * luminosity;
+	if (pos3.x >= 0 && pos3.x < textureWidth && pos3.y >= 0 && pos3.y < textureHeight){// && visible) { //Only draw stars that are on screen.
+		Result[pos3] += normalize(float4(starList[starID].r, starList[starID].g, starList[starID].b, 1)) * luminosity;
 	}
 }
 
 
-//Make the 1st number be the same as xChunks, and the 2nd as yChunk vv
+//Make black.
 [numthreads(8, 8, 1)]
 void CSClear(uint3 id : SV_DispatchThreadID)
 {
 	Result[id.xy] = float4(0, 0, 0, 0);
 }
 
-/*
-
+/* ideal conversion list for apparent magnitude to RGB brightness.
 rgb,   mag
 510 = -3
 255 = -2

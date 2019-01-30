@@ -6,11 +6,8 @@
 // with cs.SetTexture
 uint textureHeight;
 uint textureWidth;
-uint xChunks;
-uint yChunks;
 uint starCount;
-uint starsPerChunkX;
-uint starsPerChunkY;
+uint starsPerChunk;;
 float xMin, xMax, yMin, yMax;
 float magIncrease;
 float zoom;

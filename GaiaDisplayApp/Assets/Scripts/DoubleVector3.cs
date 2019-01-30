@@ -11,18 +11,31 @@ public class DoubleVector3{
     [SerializeField]
     double x, y, z;
 
-
+    /// <summary>
+    /// Make a new 0 Double  Vector
+    /// </summary>
     public DoubleVector3()
     {
         x = y = z = 0;
     }
 
+    /// <summary>
+    /// Make a new Double Vector with xyz values
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
     public DoubleVector3(double x, double y, double z)
     {
         this.x = x;
         this.y = y;
         this.z = z;
     }
+
+    /// <summary>
+    /// Convert Vector3 in DoubleVector3
+    /// </summary>
+    /// <param name="vec"></param>
     public DoubleVector3(Vector3 vec)
     {
         this.x = vec.x;

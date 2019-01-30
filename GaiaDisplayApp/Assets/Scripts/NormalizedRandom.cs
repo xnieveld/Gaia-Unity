@@ -3,8 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+/// <summary>
+/// Get a normalized random values. 
+/// </summary>
 public class NormalizedRandom : MonoBehaviour {
 
+    /// <summary>
+    /// Get a normalized random value
+    /// </summary>
+    /// <param name="r">Put a Random in</param>
+    /// <returns>Get a random double</returns>
     public static double NextGaussianDouble(System.Random r)
     {
         double u, v, S;

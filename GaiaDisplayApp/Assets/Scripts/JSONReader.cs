@@ -2,34 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-/*public class JSONReader : MonoBehaviour
-{
-
-    public static string ReadJSON(string fileName)
-    {
-        string path = "Assets\\" + fileName + ".json";
-        StreamReader reader = new StreamReader(path);
-
-        List<char[]> charList = new List<char[]>();
-        int result = 1;
-        int index = 0;
-        while (result != 0)
-        {
-
-        }
-        char[] charBuff = new char[2147483648];
-        string json = reader.ReadBlock(charBuff, 0, 2147483647);
-        reader.Close();
-        return json;
-    }
-
-    public static StarList ParseStarJSON(string json)
-    {
-        StarList starList = JsonUtility.FromJson<StarList>(json);
-        return starList;
-    }
-}
-*/
 
 /// <summary>
 /// A JSON reader for reading in the stars. 
