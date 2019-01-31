@@ -98,7 +98,7 @@ public class StarRenderer : MonoBehaviour {
     /// <summary>
     /// Default magnitude increase
     /// </summary>
-    float magIncrease = 7;
+    float magIncrease = 6;
 
     /// <summary>
     /// Texture array used for blooming
@@ -203,7 +203,6 @@ public class StarRenderer : MonoBehaviour {
             starBuffer = new ComputeBuffer(starList.Count, sizeof(float) * 7);
             starBuffer.SetData(starList.Stars);
             starRenderShader.SetBuffer(0, "starList", starBuffer);
-            starRenderShader.SetFloat("starsPerChunk", 3000);
         }
         
         starRenderShader.SetTexture(kernel, "Result", renderTex);
@@ -245,8 +244,8 @@ public class StarRenderer : MonoBehaviour {
         RenderTexture merged = currentDestination;
 
 
-        int width = source.width / 2;
-        int height = source.height / 2;
+        int width = source.width;
+        int height = source.height;
 
         //Filter for bright objects only
         currentDestination = textures[0] =  RenderTexture.GetTemporary(width, height, 0, format);

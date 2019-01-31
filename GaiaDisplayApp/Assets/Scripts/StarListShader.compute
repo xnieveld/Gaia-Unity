@@ -7,7 +7,6 @@
 uint textureHeight;
 uint textureWidth;
 uint starCount;
-uint starsPerChunk;
 float magIncrease;
 float3 playerPos;
 float playerAngle1;
@@ -116,7 +115,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 	uint starID = id.x;
 	float3 polarCoords = CartesianToPolar(float3(starList[starID].x, starList[starID].y, starList[starID].z), playerPos); //Get the polar coords.
 
-	///This whole bit is important, but not functional now.
+	///This whole bit is important, but not functional now. vvv
 	/*/
 	float phi_1 = (playerAngle2 - 3.14159265 / 2);
 	float phi = -polarCoords.y;
@@ -150,6 +149,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 	polarCoords.xy = WrapAngle(polarCoords.xy); //Wrap coords, this will make stars on the other side of the 
 	pos.x = (textureWidth / fovh) * (polarCoords.x);
 	pos.y = (textureHeight / fovv) * (polarCoords.y);
+
 	pos.x -= (textureWidth / 2);
 	pos.y -= (textureHeight / 2); //This will essentially draw part of an equirectangular map. It is not perspective. The edges will be very strange.
 	float2 pos2 = pos;
@@ -167,7 +167,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 	
 	float2 pos3 = pos2;
 	float apparentMag = 5 * log10(polarCoords.z / 10) + starList[starID].m; //Calculate apparent magnitude based on player position and absolute magnitude.
-	float4 luminosity = 255 * pow(2, ((-apparentMag) - 2 + magIncrease)); //Calculate luminosity based on apparent magnitude. 5 magnitude lower = 100x as bright. Take pixel logarythic screen luminosity into account. 
+	float4 luminosity = pow(pow(100, 0.2), (6 - apparentMag + magIncrease)); //Calculate luminosity based on apparent magnitude. 5 magnitude lower = 100x as bright. Take pixel logarythic screen luminosity into account. 
 
 	if (pos3.x >= 0 && pos3.x < textureWidth && pos3.y >= 0 && pos3.y < textureHeight){// && visible) { //Only draw stars that are on screen.
 		Result[pos3] += normalize(float4(starList[starID].r, starList[starID].g, starList[starID].b, 1)) * luminosity;
@@ -182,15 +182,3 @@ void CSClear(uint3 id : SV_DispatchThreadID)
 	Result[id.xy] = float4(0, 0, 0, 0);
 }
 
-/* ideal conversion list for apparent magnitude to RGB brightness.
-rgb,   mag
-510 = -3
-255 = -2
-128 = -1
-64 = 0
-32 = 1
-16 = 2
-8 = 3
-4 = 4
-2 = 5
-1 = 6*/
