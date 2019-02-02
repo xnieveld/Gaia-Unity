@@ -1,0 +1,87 @@
+\hypertarget{class_binary_manager}{}\section{Binary\+Manager Class Reference}
+\label{class_binary_manager}\index{BinaryManager@{BinaryManager}}
+
+
+Attempt at a binary reader/writer, but turned out to be really, really slow. Abandoned.  
+
+
+Inheritance diagram for Binary\+Manager\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_binary_manager}
+\end{center}
+\end{figure}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{class_binary_manager_a5ed7a73e8b658af239df501ef664cf1d}{Star\+List\+To\+Binary}} (\mbox{\hyperlink{class_star_list}{Star\+List}} star\+List, string file\+Name)
+\begin{DoxyCompactList}\small\item\em Convert a starlist object to a binary file \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{class_star_list}{Star\+List}} \mbox{\hyperlink{class_binary_manager_aa2640924cb02371025d1741cdfafeacf}{Binary\+To\+Star\+List}} (string file\+Name)
+\begin{DoxyCompactList}\small\item\em Convert a binary file to a star\+List object. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{class_binary_manager_a7a9e6671eb7c5a003e5f0d1959268d5d}{Star\+List\+To\+Binary\+Own}} (\mbox{\hyperlink{class_star_list}{Star\+List}} star\+List, string file\+Name)
+\begin{DoxyCompactList}\small\item\em W\+IP, convert the a starlist to own binary format, but not finished, and not needed anymore. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Attempt at a binary reader/writer, but turned out to be really, really slow. Abandoned. 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_binary_manager_aa2640924cb02371025d1741cdfafeacf}\label{class_binary_manager_aa2640924cb02371025d1741cdfafeacf}} 
+\index{BinaryManager@{BinaryManager}!BinaryToStarList@{BinaryToStarList}}
+\index{BinaryToStarList@{BinaryToStarList}!BinaryManager@{BinaryManager}}
+\subsubsection{\texorpdfstring{BinaryToStarList()}{BinaryToStarList()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{class_star_list}{Star\+List}} Binary\+Manager.\+Binary\+To\+Star\+List (\begin{DoxyParamCaption}\item[{string}]{file\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Convert a binary file to a star\+List object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file\+Name} & The filename\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The read in star\+List.
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_binary_manager_a5ed7a73e8b658af239df501ef664cf1d}\label{class_binary_manager_a5ed7a73e8b658af239df501ef664cf1d}} 
+\index{BinaryManager@{BinaryManager}!StarListToBinary@{StarListToBinary}}
+\index{StarListToBinary@{StarListToBinary}!BinaryManager@{BinaryManager}}
+\subsubsection{\texorpdfstring{StarListToBinary()}{StarListToBinary()}}
+{\footnotesize\ttfamily static void Binary\+Manager.\+Star\+List\+To\+Binary (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_star_list}{Star\+List}}}]{star\+List,  }\item[{string}]{file\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Convert a starlist object to a binary file 
+
+
+\begin{DoxyParams}{Parameters}
+{\em star\+List} & The star\+List to convert\\
+\hline
+{\em file\+Name} & The filename to save it to.\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_binary_manager_a7a9e6671eb7c5a003e5f0d1959268d5d}\label{class_binary_manager_a7a9e6671eb7c5a003e5f0d1959268d5d}} 
+\index{BinaryManager@{BinaryManager}!StarListToBinaryOwn@{StarListToBinaryOwn}}
+\index{StarListToBinaryOwn@{StarListToBinaryOwn}!BinaryManager@{BinaryManager}}
+\subsubsection{\texorpdfstring{StarListToBinaryOwn()}{StarListToBinaryOwn()}}
+{\footnotesize\ttfamily static void Binary\+Manager.\+Star\+List\+To\+Binary\+Own (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_star_list}{Star\+List}}}]{star\+List,  }\item[{string}]{file\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+W\+IP, convert the a starlist to own binary format, but not finished, and not needed anymore. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em star\+List} & The starlist to convert\\
+\hline
+{\em file\+Name} & The filename to save it to.\\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{_binary_manager_8cs}{Binary\+Manager.\+cs}}\end{DoxyCompactItemize}

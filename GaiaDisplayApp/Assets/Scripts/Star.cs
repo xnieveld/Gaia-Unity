@@ -9,14 +9,36 @@ using System;
 [Serializable]
 public struct Star
 {  
-    
+    /// <summary>
+    /// X position of the star
+    /// </summary>
     public float x; 
+    /// <summary>
+    /// Y position of the star
+    /// </summary>
     public float y;
+    /// <summary>
+    /// Z position of the star
+    /// </summary>
     public float z;
-    public float r; //red
-    public float g; //green
-    public float b; //blue
-    public float m; //aboslute magnitude
+
+    /// <summary>
+    /// Red component of the star's color
+    /// </summary>
+    public float r;
+    /// <summary>
+    /// Green component of the star's color
+    /// </summary>
+    public float g;
+    /// <summary>
+    /// Blue component of the star's color
+    /// </summary>
+    public float b;
+
+    /// <summary>
+    /// Absolute magnitude of the star
+    /// </summary>
+    public float m;
 
     /// <summary>
     /// Size of a basic star
@@ -34,7 +56,7 @@ public struct Star
     /// <summary>
     /// Cast a star into a byte array.
     /// </summary>
-    /// <param name="s"></param>
+    /// <param name="s">Star to cast</param>
     public static explicit operator Byte[](Star s)
     {
         Byte[] ba = new byte[ByteSize];        

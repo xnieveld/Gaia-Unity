@@ -1,0 +1,175 @@
+\hypertarget{class_star_renderer}{}\section{Star\+Renderer Class Reference}
+\label{class_star_renderer}\index{StarRenderer@{StarRenderer}}
+
+
+Renderer of the stars.  
+
+
+Inheritance diagram for Star\+Renderer\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_star_renderer}
+\end{center}
+\end{figure}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+Compute\+Shader \mbox{\hyperlink{class_star_renderer_a0dab9cfb1013e961414f542841947f14}{star\+Render\+Shader}}
+\begin{DoxyCompactList}\small\item\em The compute shader that renders the stars \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{class_star_renderer_aa8db41c2832b85a0d769ec1d85ed5332}{texture\+Width}} = 1920
+\begin{DoxyCompactList}\small\item\em Texture width \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{class_star_renderer_a8a1aac8f3fc4841b8e8ab9c53db856c0}{texture\+Height}} = 1080
+\begin{DoxyCompactList}\small\item\em Texture height \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{class_star_renderer_a74b19e105edfbee2c2d7a1311112f1bf}{star\+Count}} = 3000000
+\begin{DoxyCompactList}\small\item\em Number of stars \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{class_star_renderer_a267117fca2d5593da99457ad77b1eedc}{iterations}} = 1
+\begin{DoxyCompactList}\small\item\em Itterations of up and down scaling, more = better and slower \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{class_star_renderer_aedb60f380d5c481c8f2b76111cc943f2}{threshold}} = 1
+\begin{DoxyCompactList}\small\item\em Threshold for how light something has to be to start blooming, 1 = (1,1,1) (aka) white. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{class_star_renderer_a79c1cafe6e1ac487b3480a7aa9321310}{power}} = 1
+\begin{DoxyCompactList}\small\item\em The power of the blooming, higher = more blooming \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{class_star_renderer_a8b811c8bb3ed1994d130ba96a959d555}{exposure}} = 1
+\begin{DoxyCompactList}\small\item\em The camera exposure, 1 = standard, higher = everything brighter \end{DoxyCompactList}\item 
+Shader \mbox{\hyperlink{class_star_renderer_a3aaca55738c02aa404fac3cad14ab1dc}{bloom\+Shader}}
+\begin{DoxyCompactList}\small\item\em Bloom shader \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_star_renderer_a28014be558366230486c585403774a47}{re\+Render}} = true
+\begin{DoxyCompactList}\small\item\em A bool to indicate whether the frame needs to be re-\/rendered \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{class_star_renderer}{Star\+Renderer}} \mbox{\hyperlink{class_star_renderer_ad0781969b2fc50528fbd1424adf0e624}{Instance}}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\item 
+\mbox{\hyperlink{class_player_movement}{Player\+Movement}} \mbox{\hyperlink{class_star_renderer_a57a17cbf59b7a6f0d9f3ed9cd1b758f2}{Player}}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em The player \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Renderer of the stars. 
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_star_renderer_a3aaca55738c02aa404fac3cad14ab1dc}\label{class_star_renderer_a3aaca55738c02aa404fac3cad14ab1dc}} 
+\index{StarRenderer@{StarRenderer}!bloomShader@{bloomShader}}
+\index{bloomShader@{bloomShader}!StarRenderer@{StarRenderer}}
+\subsubsection{\texorpdfstring{bloomShader}{bloomShader}}
+{\footnotesize\ttfamily Shader Star\+Renderer.\+bloom\+Shader}
+
+
+
+Bloom shader 
+
+\mbox{\Hypertarget{class_star_renderer_a8b811c8bb3ed1994d130ba96a959d555}\label{class_star_renderer_a8b811c8bb3ed1994d130ba96a959d555}} 
+\index{StarRenderer@{StarRenderer}!exposure@{exposure}}
+\index{exposure@{exposure}!StarRenderer@{StarRenderer}}
+\subsubsection{\texorpdfstring{exposure}{exposure}}
+{\footnotesize\ttfamily float Star\+Renderer.\+exposure = 1}
+
+
+
+The camera exposure, 1 = standard, higher = everything brighter 
+
+\mbox{\Hypertarget{class_star_renderer_a267117fca2d5593da99457ad77b1eedc}\label{class_star_renderer_a267117fca2d5593da99457ad77b1eedc}} 
+\index{StarRenderer@{StarRenderer}!iterations@{iterations}}
+\index{iterations@{iterations}!StarRenderer@{StarRenderer}}
+\subsubsection{\texorpdfstring{iterations}{iterations}}
+{\footnotesize\ttfamily int Star\+Renderer.\+iterations = 1}
+
+
+
+Itterations of up and down scaling, more = better and slower 
+
+\mbox{\Hypertarget{class_star_renderer_a79c1cafe6e1ac487b3480a7aa9321310}\label{class_star_renderer_a79c1cafe6e1ac487b3480a7aa9321310}} 
+\index{StarRenderer@{StarRenderer}!power@{power}}
+\index{power@{power}!StarRenderer@{StarRenderer}}
+\subsubsection{\texorpdfstring{power}{power}}
+{\footnotesize\ttfamily float Star\+Renderer.\+power = 1}
+
+
+
+The power of the blooming, higher = more blooming 
+
+\mbox{\Hypertarget{class_star_renderer_a28014be558366230486c585403774a47}\label{class_star_renderer_a28014be558366230486c585403774a47}} 
+\index{StarRenderer@{StarRenderer}!reRender@{reRender}}
+\index{reRender@{reRender}!StarRenderer@{StarRenderer}}
+\subsubsection{\texorpdfstring{reRender}{reRender}}
+{\footnotesize\ttfamily bool Star\+Renderer.\+re\+Render = true}
+
+
+
+A bool to indicate whether the frame needs to be re-\/rendered 
+
+\mbox{\Hypertarget{class_star_renderer_a74b19e105edfbee2c2d7a1311112f1bf}\label{class_star_renderer_a74b19e105edfbee2c2d7a1311112f1bf}} 
+\index{StarRenderer@{StarRenderer}!starCount@{starCount}}
+\index{starCount@{starCount}!StarRenderer@{StarRenderer}}
+\subsubsection{\texorpdfstring{starCount}{starCount}}
+{\footnotesize\ttfamily int Star\+Renderer.\+star\+Count = 3000000}
+
+
+
+Number of stars 
+
+\mbox{\Hypertarget{class_star_renderer_a0dab9cfb1013e961414f542841947f14}\label{class_star_renderer_a0dab9cfb1013e961414f542841947f14}} 
+\index{StarRenderer@{StarRenderer}!starRenderShader@{starRenderShader}}
+\index{starRenderShader@{starRenderShader}!StarRenderer@{StarRenderer}}
+\subsubsection{\texorpdfstring{starRenderShader}{starRenderShader}}
+{\footnotesize\ttfamily Compute\+Shader Star\+Renderer.\+star\+Render\+Shader}
+
+
+
+The compute shader that renders the stars 
+
+\mbox{\Hypertarget{class_star_renderer_a8a1aac8f3fc4841b8e8ab9c53db856c0}\label{class_star_renderer_a8a1aac8f3fc4841b8e8ab9c53db856c0}} 
+\index{StarRenderer@{StarRenderer}!textureHeight@{textureHeight}}
+\index{textureHeight@{textureHeight}!StarRenderer@{StarRenderer}}
+\subsubsection{\texorpdfstring{textureHeight}{textureHeight}}
+{\footnotesize\ttfamily int Star\+Renderer.\+texture\+Height = 1080}
+
+
+
+Texture height 
+
+\mbox{\Hypertarget{class_star_renderer_aa8db41c2832b85a0d769ec1d85ed5332}\label{class_star_renderer_aa8db41c2832b85a0d769ec1d85ed5332}} 
+\index{StarRenderer@{StarRenderer}!textureWidth@{textureWidth}}
+\index{textureWidth@{textureWidth}!StarRenderer@{StarRenderer}}
+\subsubsection{\texorpdfstring{textureWidth}{textureWidth}}
+{\footnotesize\ttfamily int Star\+Renderer.\+texture\+Width = 1920}
+
+
+
+Texture width 
+
+\mbox{\Hypertarget{class_star_renderer_aedb60f380d5c481c8f2b76111cc943f2}\label{class_star_renderer_aedb60f380d5c481c8f2b76111cc943f2}} 
+\index{StarRenderer@{StarRenderer}!threshold@{threshold}}
+\index{threshold@{threshold}!StarRenderer@{StarRenderer}}
+\subsubsection{\texorpdfstring{threshold}{threshold}}
+{\footnotesize\ttfamily float Star\+Renderer.\+threshold = 1}
+
+
+
+Threshold for how light something has to be to start blooming, 1 = (1,1,1) (aka) white. 
+
+
+
+\subsection{Property Documentation}
+\mbox{\Hypertarget{class_star_renderer_ad0781969b2fc50528fbd1424adf0e624}\label{class_star_renderer_ad0781969b2fc50528fbd1424adf0e624}} 
+\index{StarRenderer@{StarRenderer}!Instance@{Instance}}
+\index{Instance@{Instance}!StarRenderer@{StarRenderer}}
+\subsubsection{\texorpdfstring{Instance}{Instance}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_star_renderer}{Star\+Renderer}} Star\+Renderer.\+Instance\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [get]}}
+
+\mbox{\Hypertarget{class_star_renderer_a57a17cbf59b7a6f0d9f3ed9cd1b758f2}\label{class_star_renderer_a57a17cbf59b7a6f0d9f3ed9cd1b758f2}} 
+\index{StarRenderer@{StarRenderer}!Player@{Player}}
+\index{Player@{Player}!StarRenderer@{StarRenderer}}
+\subsubsection{\texorpdfstring{Player}{Player}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_player_movement}{Player\+Movement}} Star\+Renderer.\+Player\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+The player 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{_star_renderer_8cs}{Star\+Renderer.\+cs}}\end{DoxyCompactItemize}

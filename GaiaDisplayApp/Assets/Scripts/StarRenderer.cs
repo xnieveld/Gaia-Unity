@@ -87,12 +87,24 @@ public class StarRenderer : MonoBehaviour {
     public Shader bloomShader;
 
     /// <summary>
-    /// Filter passes
+    /// Kernel ID in the bloom shader of the filter pass
     /// </summary>
     const int FilterPass = 0;
+    /// <summary>
+    /// Kernel ID in the bloom shader of the downscale pass
+    /// </summary>
     const int DownScalePass = 1;
+    /// <summary>
+    /// Kernel ID in the bloom shader of the upscale pass
+    /// </summary>
     const int UpScalePass = 2;
+    /// <summary>
+    /// Kernel ID in the bloom shader of the merge pass
+    /// </summary>
     const int MergePass = 3;
+    /// <summary>
+    /// Kernel ID in the bloom shader of the background / foreground merge pass
+    /// </summary>
     const int MergePassBackDrop = 4;
 
     /// <summary>

@@ -1,0 +1,321 @@
+\hypertarget{class_double_vector3}{}\section{Double\+Vector3 Class Reference}
+\label{class_double_vector3}\index{DoubleVector3@{DoubleVector3}}
+
+
+Basically a Vector 3 but with doubles.  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_double_vector3_a66c77c3c125c29d0210aefee14b55f28}{Double\+Vector3}} ()
+\begin{DoxyCompactList}\small\item\em Make a new 0 Double Vector \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_double_vector3_ae23b95b393c10d0d74e9d1244ab02ef6}{Double\+Vector3}} (double x, double y, double z)
+\begin{DoxyCompactList}\small\item\em Make a new Double Vector with xyz values \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_double_vector3_a1142dfac687f55169301fec1ecefef7f}{Double\+Vector3}} (Vector3 vec)
+\begin{DoxyCompactList}\small\item\em Convert Vector3 in \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_double_vector3_af5e455ab247ae9bc0e393d04a03495c4}{Double\+Vector3}} (Vector2 vec)
+\item 
+double \mbox{\hyperlink{class_double_vector3_afc1034f4bff688a4d67ac2d72d7f2e6b}{Length}} ()
+\begin{DoxyCompactList}\small\item\em Calculate the length of the vector. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{class_double_vector3_a3856b93c953c7bd5310b8c228c1c2b1e}{Length\+Cubed}} ()
+\begin{DoxyCompactList}\small\item\em Calculates the length of the vector, but doesn\textquotesingle{}t finish the calculation. Useful to prevent extra calculations in case the length cubed is needed. \end{DoxyCompactList}\item 
+override string \mbox{\hyperlink{class_double_vector3_a3260bcec4bb8444811215005a3f04865}{To\+String}} ()
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static implicit \mbox{\hyperlink{class_double_vector3_a6d17dc0df1592c4358d677a68b133832}{operator Double\+Vector3}} (Vector3 vec)
+\begin{DoxyCompactList}\small\item\em Cast a Vector3 (floats) to a \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{class_double_vector3_a74319964445fa87e6f626a9034846474}{operator Vector3}} (\mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} vec)
+\begin{DoxyCompactList}\small\item\em Cast a \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} to a Vector3 (floats, so lossy cast) \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} \mbox{\hyperlink{class_double_vector3_a411c82aaca8d68a748acbc659d263edb}{operator+}} (\mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} a, \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} b)
+\begin{DoxyCompactList}\small\item\em Add two doublevectors. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} \mbox{\hyperlink{class_double_vector3_aca5834e95f528046ba250127d6ffcf56}{operator -\/}} (\mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} a, \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} b)
+\begin{DoxyCompactList}\small\item\em Subtract two doublevectors. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} \mbox{\hyperlink{class_double_vector3_adf389425fb8a1e1ec3d8ef65fb1f2846}{operator $\ast$}} (\mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} a, double b)
+\begin{DoxyCompactList}\small\item\em Multiply a double vector with a scalar. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} \mbox{\hyperlink{class_double_vector3_a7188798234df06b15e0c6946285e02b8}{operator $\ast$}} (double a, \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} b)
+\begin{DoxyCompactList}\small\item\em Multiply a double vector with a scalar. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} \mbox{\hyperlink{class_double_vector3_a069bc62ef684c5ed1bfca92ec0820932}{operator/}} (\mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} a, double b)
+\begin{DoxyCompactList}\small\item\em Divide a double vector by a scalar \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} \mbox{\hyperlink{class_double_vector3_aacc1881f47ec834f4bcf25b84a1fe8de}{operator/}} (double a, \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} b)
+\begin{DoxyCompactList}\small\item\em Create a new double vector with each component being scalar A divided by the components of Vector b \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{\hyperlink{class_double_vector3_a222624a0d77d108f21221e472ac08f05}{X}}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+double \mbox{\hyperlink{class_double_vector3_a47fffe514be07e27f35e24614f2dff89}{Y}}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\item 
+double \mbox{\hyperlink{class_double_vector3_adcedb2cef768d9ab7d10f27f58da9d35}{Z}}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Basically a Vector 3 but with doubles. 
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_double_vector3_a66c77c3c125c29d0210aefee14b55f28}\label{class_double_vector3_a66c77c3c125c29d0210aefee14b55f28}} 
+\index{DoubleVector3@{DoubleVector3}!DoubleVector3@{DoubleVector3}}
+\index{DoubleVector3@{DoubleVector3}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{DoubleVector3()}{DoubleVector3()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily Double\+Vector3.\+Double\+Vector3 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Make a new 0 Double Vector 
+
+\mbox{\Hypertarget{class_double_vector3_ae23b95b393c10d0d74e9d1244ab02ef6}\label{class_double_vector3_ae23b95b393c10d0d74e9d1244ab02ef6}} 
+\index{DoubleVector3@{DoubleVector3}!DoubleVector3@{DoubleVector3}}
+\index{DoubleVector3@{DoubleVector3}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{DoubleVector3()}{DoubleVector3()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily Double\+Vector3.\+Double\+Vector3 (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y,  }\item[{double}]{z }\end{DoxyParamCaption})}
+
+
+
+Make a new Double Vector with xyz values 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+{\em z} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_double_vector3_a1142dfac687f55169301fec1ecefef7f}\label{class_double_vector3_a1142dfac687f55169301fec1ecefef7f}} 
+\index{DoubleVector3@{DoubleVector3}!DoubleVector3@{DoubleVector3}}
+\index{DoubleVector3@{DoubleVector3}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{DoubleVector3()}{DoubleVector3()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily Double\+Vector3.\+Double\+Vector3 (\begin{DoxyParamCaption}\item[{Vector3}]{vec }\end{DoxyParamCaption})}
+
+
+
+Convert Vector3 in \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} 
+
+
+\begin{DoxyParams}{Parameters}
+{\em vec} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_double_vector3_af5e455ab247ae9bc0e393d04a03495c4}\label{class_double_vector3_af5e455ab247ae9bc0e393d04a03495c4}} 
+\index{DoubleVector3@{DoubleVector3}!DoubleVector3@{DoubleVector3}}
+\index{DoubleVector3@{DoubleVector3}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{DoubleVector3()}{DoubleVector3()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily Double\+Vector3.\+Double\+Vector3 (\begin{DoxyParamCaption}\item[{Vector2}]{vec }\end{DoxyParamCaption})}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_double_vector3_afc1034f4bff688a4d67ac2d72d7f2e6b}\label{class_double_vector3_afc1034f4bff688a4d67ac2d72d7f2e6b}} 
+\index{DoubleVector3@{DoubleVector3}!Length@{Length}}
+\index{Length@{Length}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{Length()}{Length()}}
+{\footnotesize\ttfamily double Double\+Vector3.\+Length (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Calculate the length of the vector. 
+
+\begin{DoxyReturn}{Returns}
+the length
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_double_vector3_a3856b93c953c7bd5310b8c228c1c2b1e}\label{class_double_vector3_a3856b93c953c7bd5310b8c228c1c2b1e}} 
+\index{DoubleVector3@{DoubleVector3}!LengthCubed@{LengthCubed}}
+\index{LengthCubed@{LengthCubed}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{LengthCubed()}{LengthCubed()}}
+{\footnotesize\ttfamily double Double\+Vector3.\+Length\+Cubed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Calculates the length of the vector, but doesn\textquotesingle{}t finish the calculation. Useful to prevent extra calculations in case the length cubed is needed. 
+
+\begin{DoxyReturn}{Returns}
+Length cubed
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_double_vector3_adf389425fb8a1e1ec3d8ef65fb1f2846}\label{class_double_vector3_adf389425fb8a1e1ec3d8ef65fb1f2846}} 
+\index{DoubleVector3@{DoubleVector3}!operator $\ast$@{operator $\ast$}}
+\index{operator $\ast$@{operator $\ast$}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{operator $\ast$()}{operator *()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} Double\+Vector3.\+operator $\ast$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_double_vector3}{Double\+Vector3}}}]{a,  }\item[{double}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Multiply a double vector with a scalar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & \\
+\hline
+{\em b} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The new double factor
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_double_vector3_a7188798234df06b15e0c6946285e02b8}\label{class_double_vector3_a7188798234df06b15e0c6946285e02b8}} 
+\index{DoubleVector3@{DoubleVector3}!operator $\ast$@{operator $\ast$}}
+\index{operator $\ast$@{operator $\ast$}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{operator $\ast$()}{operator *()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} Double\+Vector3.\+operator $\ast$ (\begin{DoxyParamCaption}\item[{double}]{a,  }\item[{\mbox{\hyperlink{class_double_vector3}{Double\+Vector3}}}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Multiply a double vector with a scalar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & \\
+\hline
+{\em b} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The new double factor
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_double_vector3_aca5834e95f528046ba250127d6ffcf56}\label{class_double_vector3_aca5834e95f528046ba250127d6ffcf56}} 
+\index{DoubleVector3@{DoubleVector3}!operator -\/@{operator -\/}}
+\index{operator -\/@{operator -\/}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{operator -\/()}{operator -()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} Double\+Vector3.\+operator -\/ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_double_vector3}{Double\+Vector3}}}]{a,  }\item[{\mbox{\hyperlink{class_double_vector3}{Double\+Vector3}}}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Subtract two doublevectors. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & \\
+\hline
+{\em b} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Vector a -\/ vector b.
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_double_vector3_a6d17dc0df1592c4358d677a68b133832}\label{class_double_vector3_a6d17dc0df1592c4358d677a68b133832}} 
+\index{DoubleVector3@{DoubleVector3}!operator DoubleVector3@{operator DoubleVector3}}
+\index{operator DoubleVector3@{operator DoubleVector3}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{operator DoubleVector3()}{operator DoubleVector3()}}
+{\footnotesize\ttfamily static implicit Double\+Vector3.\+operator \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} (\begin{DoxyParamCaption}\item[{Vector3}]{vec }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Cast a Vector3 (floats) to a \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} 
+
+
+\begin{DoxyParams}{Parameters}
+{\em vec} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_double_vector3_a74319964445fa87e6f626a9034846474}\label{class_double_vector3_a74319964445fa87e6f626a9034846474}} 
+\index{DoubleVector3@{DoubleVector3}!operator Vector3@{operator Vector3}}
+\index{operator Vector3@{operator Vector3}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{operator Vector3()}{operator Vector3()}}
+{\footnotesize\ttfamily static Double\+Vector3.\+operator Vector3 (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_double_vector3}{Double\+Vector3}}}]{vec }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}, {\ttfamily [static]}}
+
+
+
+Cast a \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} to a Vector3 (floats, so lossy cast) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em vec} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_double_vector3_a411c82aaca8d68a748acbc659d263edb}\label{class_double_vector3_a411c82aaca8d68a748acbc659d263edb}} 
+\index{DoubleVector3@{DoubleVector3}!operator+@{operator+}}
+\index{operator+@{operator+}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{operator+()}{operator+()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} Double\+Vector3.\+operator+ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_double_vector3}{Double\+Vector3}}}]{a,  }\item[{\mbox{\hyperlink{class_double_vector3}{Double\+Vector3}}}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Add two doublevectors. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & \\
+\hline
+{\em b} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The sum of the two double vectors.
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_double_vector3_a069bc62ef684c5ed1bfca92ec0820932}\label{class_double_vector3_a069bc62ef684c5ed1bfca92ec0820932}} 
+\index{DoubleVector3@{DoubleVector3}!operator/@{operator/}}
+\index{operator/@{operator/}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{operator/()}{operator/()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} Double\+Vector3.\+operator/ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_double_vector3}{Double\+Vector3}}}]{a,  }\item[{double}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Divide a double vector by a scalar 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & \\
+\hline
+{\em b} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The double Vector divided by the scalar.
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_double_vector3_aacc1881f47ec834f4bcf25b84a1fe8de}\label{class_double_vector3_aacc1881f47ec834f4bcf25b84a1fe8de}} 
+\index{DoubleVector3@{DoubleVector3}!operator/@{operator/}}
+\index{operator/@{operator/}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{operator/()}{operator/()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{class_double_vector3}{Double\+Vector3}} Double\+Vector3.\+operator/ (\begin{DoxyParamCaption}\item[{double}]{a,  }\item[{\mbox{\hyperlink{class_double_vector3}{Double\+Vector3}}}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Create a new double vector with each component being scalar A divided by the components of Vector b 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & \\
+\hline
+{\em b} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new Vector (a / b.\+x, a / b.\+y, a / b.\+z)
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_double_vector3_a3260bcec4bb8444811215005a3f04865}\label{class_double_vector3_a3260bcec4bb8444811215005a3f04865}} 
+\index{DoubleVector3@{DoubleVector3}!ToString@{ToString}}
+\index{ToString@{ToString}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{ToString()}{ToString()}}
+{\footnotesize\ttfamily override string Double\+Vector3.\+To\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\subsection{Property Documentation}
+\mbox{\Hypertarget{class_double_vector3_a222624a0d77d108f21221e472ac08f05}\label{class_double_vector3_a222624a0d77d108f21221e472ac08f05}} 
+\index{DoubleVector3@{DoubleVector3}!X@{X}}
+\index{X@{X}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{X}{X}}
+{\footnotesize\ttfamily double Double\+Vector3.\+X\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+\mbox{\Hypertarget{class_double_vector3_a47fffe514be07e27f35e24614f2dff89}\label{class_double_vector3_a47fffe514be07e27f35e24614f2dff89}} 
+\index{DoubleVector3@{DoubleVector3}!Y@{Y}}
+\index{Y@{Y}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{Y}{Y}}
+{\footnotesize\ttfamily double Double\+Vector3.\+Y\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+\mbox{\Hypertarget{class_double_vector3_adcedb2cef768d9ab7d10f27f58da9d35}\label{class_double_vector3_adcedb2cef768d9ab7d10f27f58da9d35}} 
+\index{DoubleVector3@{DoubleVector3}!Z@{Z}}
+\index{Z@{Z}!DoubleVector3@{DoubleVector3}}
+\subsubsection{\texorpdfstring{Z}{Z}}
+{\footnotesize\ttfamily double Double\+Vector3.\+Z\hspace{0.3cm}{\ttfamily [get]}, {\ttfamily [set]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{_double_vector3_8cs}{Double\+Vector3.\+cs}}\end{DoxyCompactItemize}

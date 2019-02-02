@@ -1,0 +1,131 @@
+\hypertarget{class_j_s_o_n_reader}{}\section{J\+S\+O\+N\+Reader Class Reference}
+\label{class_j_s_o_n_reader}\index{JSONReader@{JSONReader}}
+
+
+A J\+S\+ON reader for reading in the stars.  
+
+
+Inheritance diagram for J\+S\+O\+N\+Reader\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_j_s_o_n_reader}
+\end{center}
+\end{figure}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static string \mbox{\hyperlink{class_j_s_o_n_reader_a9b5c860661574454a2d498ec224a1809}{Read\+J\+S\+ON}} (string file\+Name)
+\begin{DoxyCompactList}\small\item\em Read a single J\+S\+ON file (Or any file for that matter). \end{DoxyCompactList}\item 
+static string \mbox{[}$\,$\mbox{]} \mbox{\hyperlink{class_j_s_o_n_reader_a357e6392396016b03de0a61951d31fc4}{Read\+Long\+J\+S\+ON}} (string file\+Name)
+\begin{DoxyCompactList}\small\item\em Read a very long J\+S\+ON file (or any file). \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{class_star_list}{Star\+List}} \mbox{\hyperlink{class_j_s_o_n_reader_aa67d1a5e3aba0b5202776571eacc2062}{Parse\+Star\+J\+S\+O\+N\+List}} (string\mbox{[}$\,$\mbox{]} jsons)
+\begin{DoxyCompactList}\small\item\em Read a list of J\+S\+ON strings into a \mbox{\hyperlink{class_star_list}{Star\+List}} \end{DoxyCompactList}\item 
+static string \mbox{[}$\,$\mbox{]} \mbox{\hyperlink{class_j_s_o_n_reader_a3995d1ee97e2755b0fcc97700e5253af}{Read\+J\+S\+O\+N\+Files}} (string file\+Base\+Name, int amount)
+\begin{DoxyCompactList}\small\item\em Read a list of J\+S\+ON files (or any text files) \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{class_star_list}{Star\+List}} \mbox{\hyperlink{class_j_s_o_n_reader_ae385710fbe5cd84513a4282b6465ed36}{Parse\+Star\+J\+S\+ON}} (string json)
+\begin{DoxyCompactList}\small\item\em Parse a J\+S\+ON string into a Starlist. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A J\+S\+ON reader for reading in the stars. 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_j_s_o_n_reader_ae385710fbe5cd84513a4282b6465ed36}\label{class_j_s_o_n_reader_ae385710fbe5cd84513a4282b6465ed36}} 
+\index{JSONReader@{JSONReader}!ParseStarJSON@{ParseStarJSON}}
+\index{ParseStarJSON@{ParseStarJSON}!JSONReader@{JSONReader}}
+\subsubsection{\texorpdfstring{ParseStarJSON()}{ParseStarJSON()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{class_star_list}{Star\+List}} J\+S\+O\+N\+Reader.\+Parse\+Star\+J\+S\+ON (\begin{DoxyParamCaption}\item[{string}]{json }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Parse a J\+S\+ON string into a Starlist. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em json} & J\+S\+ON string to be parsed.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Starlist object.
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_j_s_o_n_reader_aa67d1a5e3aba0b5202776571eacc2062}\label{class_j_s_o_n_reader_aa67d1a5e3aba0b5202776571eacc2062}} 
+\index{JSONReader@{JSONReader}!ParseStarJSONList@{ParseStarJSONList}}
+\index{ParseStarJSONList@{ParseStarJSONList}!JSONReader@{JSONReader}}
+\subsubsection{\texorpdfstring{ParseStarJSONList()}{ParseStarJSONList()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{class_star_list}{Star\+List}} J\+S\+O\+N\+Reader.\+Parse\+Star\+J\+S\+O\+N\+List (\begin{DoxyParamCaption}\item[{string \mbox{[}$\,$\mbox{]}}]{jsons }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Read a list of J\+S\+ON strings into a \mbox{\hyperlink{class_star_list}{Star\+List}} 
+
+
+\begin{DoxyParams}{Parameters}
+{\em jsons} & A list of J\+S\+ON stars.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A \mbox{\hyperlink{class_star_list}{Star\+List}} object containing all the stars read.
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_j_s_o_n_reader_a9b5c860661574454a2d498ec224a1809}\label{class_j_s_o_n_reader_a9b5c860661574454a2d498ec224a1809}} 
+\index{JSONReader@{JSONReader}!ReadJSON@{ReadJSON}}
+\index{ReadJSON@{ReadJSON}!JSONReader@{JSONReader}}
+\subsubsection{\texorpdfstring{ReadJSON()}{ReadJSON()}}
+{\footnotesize\ttfamily static string J\+S\+O\+N\+Reader.\+Read\+J\+S\+ON (\begin{DoxyParamCaption}\item[{string}]{file\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Read a single J\+S\+ON file (Or any file for that matter). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file\+Name} & The name of the file\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the content of the file as one long string
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_j_s_o_n_reader_a3995d1ee97e2755b0fcc97700e5253af}\label{class_j_s_o_n_reader_a3995d1ee97e2755b0fcc97700e5253af}} 
+\index{JSONReader@{JSONReader}!ReadJSONFiles@{ReadJSONFiles}}
+\index{ReadJSONFiles@{ReadJSONFiles}!JSONReader@{JSONReader}}
+\subsubsection{\texorpdfstring{ReadJSONFiles()}{ReadJSONFiles()}}
+{\footnotesize\ttfamily static string \mbox{[}$\,$\mbox{]} J\+S\+O\+N\+Reader.\+Read\+J\+S\+O\+N\+Files (\begin{DoxyParamCaption}\item[{string}]{file\+Base\+Name,  }\item[{int}]{amount }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Read a list of J\+S\+ON files (or any text files) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file\+Base\+Name} & Base name of the files, files are expected to have numerical indicators after this name. For example \textquotesingle{}file0\textquotesingle{}, \textquotesingle{}file1\textquotesingle{}, \textquotesingle{}file2\textquotesingle{}.\\
+\hline
+{\em amount} & Number of files to read.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+An array of strings containing all the files. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_j_s_o_n_reader_a357e6392396016b03de0a61951d31fc4}\label{class_j_s_o_n_reader_a357e6392396016b03de0a61951d31fc4}} 
+\index{JSONReader@{JSONReader}!ReadLongJSON@{ReadLongJSON}}
+\index{ReadLongJSON@{ReadLongJSON}!JSONReader@{JSONReader}}
+\subsubsection{\texorpdfstring{ReadLongJSON()}{ReadLongJSON()}}
+{\footnotesize\ttfamily static string \mbox{[}$\,$\mbox{]} J\+S\+O\+N\+Reader.\+Read\+Long\+J\+S\+ON (\begin{DoxyParamCaption}\item[{string}]{file\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Read a very long J\+S\+ON file (or any file). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file\+Name} & The name of the file\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns an array of max-\/length strings containing the file in pieces.
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{_j_s_o_n_reader_8cs}{J\+S\+O\+N\+Reader.\+cs}}\end{DoxyCompactItemize}
